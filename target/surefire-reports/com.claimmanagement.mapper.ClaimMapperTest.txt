@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.claimmanagement.mapper.ClaimMapperTest
 -------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.106 s -- in com.claimmanagement.mapper.ClaimMapperTest
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.241 s -- in com.claimmanagement.mapper.ClaimMapperTest

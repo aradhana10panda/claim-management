@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.claimmanagement.model.entity.ClaimTest" time="0.047" tests="10" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.claimmanagement.controller.ClaimControllerUnitTest" time="9.802" tests="5" errors="0" skipped="0" failures="1">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -59,14 +59,57 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="shouldCreateClaimWithParameterizedConstructor" classname="com.claimmanagement.model.entity.ClaimTest" time="0.003"/>
-  <testcase name="shouldMaintainObjectConsistencyAcrossOperations" classname="com.claimmanagement.model.entity.ClaimTest" time="0.002"/>
-  <testcase name="shouldImplementHashCodeConsistentlyWithEquals" classname="com.claimmanagement.model.entity.ClaimTest" time="0.001"/>
-  <testcase name="shouldCreateClaimWithDefaultConstructor" classname="com.claimmanagement.model.entity.ClaimTest" time="0.001"/>
-  <testcase name="shouldHandleHashCodeWithNullClaimNumber" classname="com.claimmanagement.model.entity.ClaimTest" time="0.003"/>
-  <testcase name="shouldHandleToStringWithNullValues" classname="com.claimmanagement.model.entity.ClaimTest" time="0.007"/>
-  <testcase name="shouldImplementEqualsCorrectlyBasedOnClaimNumber" classname="com.claimmanagement.model.entity.ClaimTest" time="0.008"/>
-  <testcase name="shouldSetAndGetAllPropertiesCorrectly" classname="com.claimmanagement.model.entity.ClaimTest" time="0.007"/>
-  <testcase name="shouldHandleEqualsWithNullClaimNumbers" classname="com.claimmanagement.model.entity.ClaimTest" time="0.001"/>
-  <testcase name="shouldProvideMeaningfulToStringRepresentation" classname="com.claimmanagement.model.entity.ClaimTest" time="0.002"/>
+  <testcase name="shouldCreateClaimSuccessfully" classname="com.claimmanagement.controller.ClaimControllerUnitTest" time="9.339">
+    <system-out><![CDATA[21:18:21.446 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.1.Final
+21:18:24.118 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+21:18:24.119 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+21:18:24.120 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+21:18:25.140 [main] INFO com.claimmanagement.controller.ClaimController -- Creating new claim for policy: POL-TEST-001
+21:18:25.158 [main] INFO com.claimmanagement.controller.ClaimController -- Successfully created claim: CLM-2026-000001
+]]></system-out>
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\ARADHANA PANDA\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.11\byte-buddy-agent-1.14.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+  <testcase name="shouldUpdateClaimSuccessfully" classname="com.claimmanagement.controller.ClaimControllerUnitTest" time="0.098">
+    <system-out><![CDATA[21:18:25.563 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+21:18:25.564 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+21:18:25.565 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+21:18:25.603 [main] INFO com.claimmanagement.controller.ClaimController -- Updating claim with ID: 1
+21:18:25.604 [main] INFO com.claimmanagement.controller.ClaimController -- Successfully updated claim: CLM-2026-000001
+]]></system-out>
+  </testcase>
+  <testcase name="shouldDeleteClaimSuccessfully" classname="com.claimmanagement.controller.ClaimControllerUnitTest" time="0.048">
+    <system-out><![CDATA[21:18:25.656 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+21:18:25.656 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+21:18:25.656 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+21:18:25.661 [main] INFO com.claimmanagement.controller.ClaimController -- Deleting claim with ID: 1
+21:18:25.661 [main] INFO com.claimmanagement.controller.ClaimController -- Successfully deleted claim with ID: 1
+]]></system-out>
+  </testcase>
+  <testcase name="shouldRetrieveAllClaimsWithPagination" classname="com.claimmanagement.controller.ClaimControllerUnitTest" time="0.132">
+    <failure message="Status expected:&lt;200&gt; but was:&lt;500&gt;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: Status expected:<200> but was:<500>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.claimmanagement.controller.ClaimControllerUnitTest.shouldRetrieveAllClaimsWithPagination(ClaimControllerUnitTest.java:136)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+]]></failure>
+    <system-out><![CDATA[21:18:25.712 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+21:18:25.712 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+21:18:25.712 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+21:18:25.796 [main] WARN org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver -- Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: (was java.lang.UnsupportedOperationException)]
+]]></system-out>
+  </testcase>
+  <testcase name="shouldRetrieveClaimById" classname="com.claimmanagement.controller.ClaimControllerUnitTest" time="0.051">
+    <system-out><![CDATA[21:18:25.842 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+21:18:25.842 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+21:18:25.842 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 0 ms
+]]></system-out>
+  </testcase>
 </testsuite>
