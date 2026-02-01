@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.84" tests="6" errors="0" skipped="0" failures="4">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.668" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IN"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
-    <property name="sun.java.command" value="C:\Users\ARADHANA PANDA\AppData\Local\Temp\surefire14902947322805185777\surefirebooter-20260201211813486_3.jar C:\Users\ARADHANA PANDA\AppData\Local\Temp\surefire14902947322805185777 2026-02-01T21-18-13_200-jvmRun1 surefire-20260201211813486_1tmp surefire_0-20260201211813486_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\ARADHANA PANDA\AppData\Local\Temp\surefire760214798892787132\surefirebooter-20260201212649229_3.jar C:\Users\ARADHANA PANDA\AppData\Local\Temp\surefire760214798892787132 2026-02-01T21-26-49_080-jvmRun1 surefire-20260201212649229_1tmp surefire_0-20260201212649229_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="!*RepositoryTest,!*IntegrationTest,!*ApplicationTests"/>
     <property name="surefire.test.class.path" value="C:\Users\ARADHANA PANDA\claim-management\target\test-classes;C:\Users\ARADHANA PANDA\claim-management\target\classes;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.2.2\spring-boot-starter-web-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter\3.2.2\spring-boot-starter-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot\3.2.2\spring-boot-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.2.2\spring-boot-autoconfigure-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.2.2\spring-boot-starter-logging-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\ch\qos\logback\logback-classic\1.4.14\logback-classic-1.4.14.jar;C:\Users\ARADHANA PANDA\.m2\repository\ch\qos\logback\logback-core\1.4.14\logback-core-1.4.14.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.21.1\log4j-to-slf4j-2.21.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apache\logging\log4j\log4j-api\2.21.1\log4j-api-2.21.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\slf4j\jul-to-slf4j\2.0.11\jul-to-slf4j-2.0.11.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.2.2\spring-boot-starter-json-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.15.3\jackson-databind-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.15.3\jackson-annotations-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.15.3\jackson-core-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.15.3\jackson-datatype-jdk8-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.15.3\jackson-datatype-jsr310-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.15.3\jackson-module-parameter-names-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.2.2\spring-boot-starter-tomcat-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.18\tomcat-embed-core-10.1.18.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.18\tomcat-embed-websocket-10.1.18.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-web\6.1.3\spring-web-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-beans\6.1.3\spring-beans-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\io\micrometer\micrometer-observation\1.12.2\micrometer-observation-1.12.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\io\micrometer\micrometer-commons\1.12.2\micrometer-commons-1.12.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-webmvc\6.1.3\spring-webmvc-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-aop\6.1.3\spring-aop-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-context\6.1.3\spring-context-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-expression\6.1.3\spring-expression-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.2.2\spring-boot-starter-data-jpa-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-aop\3.2.2\spring-boot-starter-aop-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\aspectj\aspectjweaver\1.9.21\aspectjweaver-1.9.21.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.2.2\spring-boot-starter-jdbc-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\zaxxer\HikariCP\5.0.1\HikariCP-5.0.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-jdbc\6.1.3\spring-jdbc-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\hibernate\orm\hibernate-core\6.4.1.Final\hibernate-core-6.4.1.Final.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\hibernate\common\hibernate-commons-annotations\6.0.6.Final\hibernate-commons-annotations-6.0.6.Final.jar;C:\Users\ARADHANA PANDA\.m2\repository\io\smallrye\jandex\3.1.2\jandex-3.1.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\classmate\1.6.0\classmate-1.6.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\net\bytebuddy\byte-buddy\1.14.11\byte-buddy-1.14.11.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.4\jaxb-runtime-4.0.4.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.4\jaxb-core-4.0.4.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\eclipse\angus\angus-activation\2.0.1\angus-activation-2.0.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\glassfish\jaxb\txw2\4.0.4\txw2-4.0.4.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\data\spring-data-jpa\3.2.2\spring-data-jpa-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\data\spring-data-commons\3.2.2\spring-data-commons-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-orm\6.1.3\spring-orm-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-tx\6.1.3\spring-tx-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\slf4j\slf4j-api\2.0.11\slf4j-api-2.0.11.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-aspects\6.1.3\spring-aspects-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.2.2\spring-boot-starter-validation-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.18\tomcat-embed-el-10.1.18.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.2.2\spring-boot-starter-test-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-test\3.2.2\spring-boot-test-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.2.2\spring-boot-test-autoconfigure-3.2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\jayway\jsonpath\json-path\2.8.0\json-path-2.8.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.1\jakarta.xml.bind-api-4.0.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.2\jakarta.activation-api-2.1.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\net\minidev\json-smart\2.5.0\json-smart-2.5.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\net\minidev\accessors-smart\2.5.0\accessors-smart-2.5.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\ow2\asm\asm\9.3\asm-9.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\assertj\assertj-core\3.24.2\assertj-core-3.24.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\awaitility\awaitility\4.2.0\awaitility-4.2.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.1\junit-jupiter-5.10.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.1\junit-jupiter-api-5.10.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\junit\platform\junit-platform-commons\1.10.1\junit-platform-commons-1.10.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.1\junit-jupiter-params-5.10.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.1\junit-jupiter-engine-5.10.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\junit\platform\junit-platform-engine\1.10.1\junit-platform-engine-1.10.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\mockito\mockito-core\5.7.0\mockito-core-5.7.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.11\byte-buddy-agent-1.14.11.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\mockito\mockito-junit-jupiter\5.7.0\mockito-junit-jupiter-5.7.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\skyscreamer\jsonassert\1.5.1\jsonassert-1.5.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-core\6.1.3\spring-core-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-jcl\6.1.3\spring-jcl-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springframework\spring-test\6.1.3\spring-test-6.1.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\mapstruct\mapstruct\1.5.5.Final\mapstruct-1.5.5.Final.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\mapstruct\mapstruct-processor\1.5.5.Final\mapstruct-processor-1.5.5.Final.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.3.0\springdoc-openapi-starter-webmvc-ui-2.3.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-api\2.3.0\springdoc-openapi-starter-webmvc-api-2.3.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\springdoc\springdoc-openapi-starter-common\2.3.0\springdoc-openapi-starter-common-2.3.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\io\swagger\core\v3\swagger-core-jakarta\2.2.19\swagger-core-jakarta-2.2.19.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\apache\commons\commons-lang3\3.13.0\commons-lang3-3.13.0.jar;C:\Users\ARADHANA PANDA\.m2\repository\io\swagger\core\v3\swagger-annotations-jakarta\2.2.19\swagger-annotations-jakarta-2.2.19.jar;C:\Users\ARADHANA PANDA\.m2\repository\io\swagger\core\v3\swagger-models-jakarta\2.2.19\swagger-models-jakarta-2.2.19.jar;C:\Users\ARADHANA PANDA\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.15.3\jackson-dataformat-yaml-2.15.3.jar;C:\Users\ARADHANA PANDA\.m2\repository\org\webjars\swagger-ui\5.10.3\swagger-ui-5.10.3.jar;"/>
@@ -31,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\ARADHANA PANDA\AppData\Local\Temp\surefire14902947322805185777\surefirebooter-20260201211813486_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\ARADHANA PANDA\AppData\Local\Temp\surefire760214798892787132\surefirebooter-20260201212649229_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.6+8-LTS-188"/>
@@ -59,67 +59,23 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="shouldCreateErrorResponseWithBuilder" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.16">
-    <failure message="&#10;Expecting actual not to be null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
-
-Expecting actual not to be null
-	at com.claimmanagement.exception.GlobalExceptionHandlerUnitTest.shouldCreateErrorResponseWithBuilder(GlobalExceptionHandlerUnitTest.java:159)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-  </testcase>
-  <testcase name="shouldHandleIllegalArgumentException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.007">
-    <failure message="&#10;expected: &quot;Bad Request&quot;&#10; but was: &quot;Invalid Request&quot;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 
-
-expected: "Bad Request"
- but was: "Invalid Request"
-	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
-	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502)
-	at com.claimmanagement.exception.GlobalExceptionHandlerUnitTest.shouldHandleIllegalArgumentException(GlobalExceptionHandlerUnitTest.java:120)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-    <system-out><![CDATA[21:18:26.285 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Illegal argument: Invalid argument provided
+  <testcase name="shouldCreateErrorResponseWithBuilder" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.166"/>
+  <testcase name="shouldHandleIllegalArgumentException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.005">
+    <system-out><![CDATA[21:26:57.965 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Illegal argument: Invalid argument provided
 ]]></system-out>
   </testcase>
-  <testcase name="shouldHandleInvalidClaimStateException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.014">
-    <system-out><![CDATA[21:18:26.302 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Invalid claim state operation: Invalid claim state transition
+  <testcase name="shouldHandleInvalidClaimStateException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.004">
+    <system-out><![CDATA[21:26:57.972 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Invalid claim state operation: Invalid claim state transition
 ]]></system-out>
   </testcase>
-  <testcase name="shouldHandleMethodArgumentNotValidException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.602">
-    <failure message="&#10;Expecting map:&#10;  {}&#10;to contain entries:&#10;  [&quot;claimantName&quot;=&quot;Name is required&quot;]&#10;but could not find the following map entries:&#10;  [&quot;claimantName&quot;=&quot;Name is required&quot;]" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
-
-Expecting map:
-  {}
-to contain entries:
-  ["claimantName"="Name is required"]
-but could not find the following map entries:
-  ["claimantName"="Name is required"]
-	at com.claimmanagement.exception.GlobalExceptionHandlerUnitTest.shouldHandleMethodArgumentNotValidException(GlobalExceptionHandlerUnitTest.java:101)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-    <system-out><![CDATA[21:18:26.838 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Validation failed: 0 validation errors
+  <testcase name="shouldHandleMethodArgumentNotValidException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.461">
+    <system-out><![CDATA[21:26:58.428 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Validation failed: 0 validation errors
 ]]></system-out>
   </testcase>
-  <testcase name="shouldHandleGenericException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.02">
-    <failure message="&#10;expected: &quot;Something went wrong&quot;&#10; but was: &quot;An unexpected error occurred. Please contact support.&quot;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 
-
-expected: "Something went wrong"
- but was: "An unexpected error occurred. Please contact support."
-	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
-	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502)
-	at com.claimmanagement.exception.GlobalExceptionHandlerUnitTest.shouldHandleGenericException(GlobalExceptionHandlerUnitTest.java:140)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-    <system-out><![CDATA[21:18:26.922 [main] ERROR com.claimmanagement.exception.GlobalExceptionHandler -- Unexpected exception
+  <testcase name="shouldHandleGenericException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.018">
+    <system-out><![CDATA[21:26:58.442 [main] ERROR com.claimmanagement.exception.GlobalExceptionHandler -- Unexpected exception
 java.lang.Exception: Something went wrong
-	at com.claimmanagement.exception.GlobalExceptionHandlerUnitTest.shouldHandleGenericException(GlobalExceptionHandlerUnitTest.java:129)
+	at com.claimmanagement.exception.GlobalExceptionHandlerUnitTest.shouldHandleGenericException(GlobalExceptionHandlerUnitTest.java:130)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
@@ -191,8 +147,8 @@ java.lang.Exception: Something went wrong
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 ]]></system-out>
   </testcase>
-  <testcase name="shouldHandleClaimNotFoundException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.007">
-    <system-out><![CDATA[21:18:26.951 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Claim not found: Claim not found with ID: 123
+  <testcase name="shouldHandleClaimNotFoundException" classname="com.claimmanagement.exception.GlobalExceptionHandlerUnitTest" time="0.008">
+    <system-out><![CDATA[21:26:58.466 [main] WARN com.claimmanagement.exception.GlobalExceptionHandler -- Claim not found: Claim not found with ID: 123
 ]]></system-out>
   </testcase>
 </testsuite>

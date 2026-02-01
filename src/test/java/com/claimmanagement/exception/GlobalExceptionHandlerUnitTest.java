@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -81,7 +82,7 @@ class GlobalExceptionHandlerUnitTest {
         FieldError fieldError1 = new FieldError("claimRequest", "claimantName", "Name is required");
         FieldError fieldError2 = new FieldError("claimRequest", "claimAmount", "Amount must be positive");
         
-        when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(fieldError1, fieldError2));
+        when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(fieldError1, fieldError2));
         
         MethodArgumentNotValidException exception = mock(MethodArgumentNotValidException.class);
         when(exception.getBindingResult()).thenReturn(bindingResult);
@@ -117,7 +118,7 @@ class GlobalExceptionHandlerUnitTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getStatus()).isEqualTo(400);
-        assertThat(response.getBody().getError()).isEqualTo("Bad Request");
+        assertThat(response.getBody().getError()).isEqualTo("Invalid Request");
         assertThat(response.getBody().getMessage()).isEqualTo(errorMessage);
     }
 
@@ -137,7 +138,7 @@ class GlobalExceptionHandlerUnitTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getStatus()).isEqualTo(500);
         assertThat(response.getBody().getError()).isEqualTo("Internal Server Error");
-        assertThat(response.getBody().getMessage()).isEqualTo(errorMessage);
+        assertThat(response.getBody().getMessage()).isEqualTo("An unexpected error occurred. Please contact support.");
     }
 
     @Test
@@ -149,6 +150,7 @@ class GlobalExceptionHandlerUnitTest {
             .error("Test Error")
             .message("Test message")
             .path("/test/path")
+            .timestamp(LocalDateTime.now())
             .build();
 
         // Assert
@@ -157,5 +159,6 @@ class GlobalExceptionHandlerUnitTest {
         assertThat(errorResponse.getMessage()).isEqualTo("Test message");
         assertThat(errorResponse.getPath()).isEqualTo("/test/path");
         assertThat(errorResponse.getTimestamp()).isNotNull();
+        assertThat(errorResponse.getDetails()).isNotNull();
     }
 }

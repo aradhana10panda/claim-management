@@ -206,21 +206,6 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
     Object[] getClaimStatisticsByStatus(@Param("status") ClaimStatus status);
 
     /**
-     * Native SQL query example for complex database-specific operations
-     * 
-     * @Query with nativeQuery = true allows raw SQL
-     * Use when JPQL limitations require database-specific features
-     * 
-     * Note: Native queries are less portable across different databases
-     * 
-     * @param days Number of days to look back
-     * @return List of claim numbers created in the last N days
-     */
-    @Query(value = "SELECT claim_number FROM claims WHERE created_at >= DATEADD('DAY', -:days, CURRENT_TIMESTAMP)", 
-           nativeQuery = true)
-    List<String> findClaimNumbersCreatedInLastDays(@Param("days") int days);
-
-    /**
      * Count claims by status
      * 
      * Method naming: countBy + PropertyName

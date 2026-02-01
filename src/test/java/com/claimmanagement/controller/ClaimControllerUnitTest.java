@@ -1,5 +1,6 @@
 package com.claimmanagement.controller;
 
+import com.claimmanagement.exception.GlobalExceptionHandler;
 import com.claimmanagement.model.dto.ClaimRequestDto;
 import com.claimmanagement.model.dto.ClaimResponseDto;
 import com.claimmanagement.model.entity.ClaimStatus;
@@ -55,7 +56,9 @@ class ClaimControllerUnitTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(claimController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(claimController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules(); // For LocalDateTime serialization
 
@@ -126,7 +129,8 @@ class ClaimControllerUnitTest {
     void shouldRetrieveAllClaimsWithPagination() throws Exception {
         // Arrange
         List<ClaimResponseDto> claims = Arrays.asList(responseDto);
-        Page<ClaimResponseDto> claimsPage = new PageImpl<>(claims);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ClaimResponseDto> claimsPage = new PageImpl<>(claims, pageable, 1);
         when(claimService.getAllClaims(any(Pageable.class))).thenReturn(claimsPage);
 
         // Act & Assert

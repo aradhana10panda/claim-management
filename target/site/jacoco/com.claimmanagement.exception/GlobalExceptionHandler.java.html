@@ -38,12 +38,12 @@ import java.util.Map;
  * @author Claim Management Team
  */
 @RestControllerAdvice
-<span class="nc" id="L41">public class GlobalExceptionHandler {</span>
+<span class="fc" id="L41">public class GlobalExceptionHandler {</span>
 
     /**
      * Logger for exception handling
      */
-<span class="nc" id="L46">    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
+<span class="fc" id="L46">    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
 
     /**
      * Handles ClaimNotFoundException
@@ -59,22 +59,22 @@ import java.util.Map;
     public ResponseEntity&lt;ErrorResponse&gt; handleClaimNotFoundException(
             ClaimNotFoundException ex, WebRequest request) {
         
-<span class="nc" id="L62">        logger.warn(&quot;Claim not found: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L62">        logger.warn(&quot;Claim not found: {}&quot;, ex.getMessage());</span>
         
-<span class="nc" id="L64">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
-<span class="nc" id="L65">                .timestamp(LocalDateTime.now())</span>
-<span class="nc" id="L66">                .status(HttpStatus.NOT_FOUND.value())</span>
-<span class="nc" id="L67">                .error(&quot;Claim Not Found&quot;)</span>
-<span class="nc" id="L68">                .message(ex.getMessage())</span>
-<span class="nc" id="L69">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
-<span class="nc" id="L70">                .build();</span>
+<span class="fc" id="L64">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="fc" id="L65">                .timestamp(LocalDateTime.now())</span>
+<span class="fc" id="L66">                .status(HttpStatus.NOT_FOUND.value())</span>
+<span class="fc" id="L67">                .error(&quot;Claim Not Found&quot;)</span>
+<span class="fc" id="L68">                .message(ex.getMessage())</span>
+<span class="fc" id="L69">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="fc" id="L70">                .build();</span>
         
         // Add claim identifier if available
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (ex.getClaimIdentifier() != null) {</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (ex.getClaimIdentifier() != null) {</span>
 <span class="nc" id="L74">            errorResponse.addDetail(&quot;claimIdentifier&quot;, ex.getClaimIdentifier());</span>
         }
         
-<span class="nc" id="L77">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
+<span class="fc" id="L77">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
     }
 
     /**
@@ -90,28 +90,28 @@ import java.util.Map;
     public ResponseEntity&lt;ErrorResponse&gt; handleInvalidClaimStateException(
             InvalidClaimStateException ex, WebRequest request) {
         
-<span class="nc" id="L93">        logger.warn(&quot;Invalid claim state operation: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L93">        logger.warn(&quot;Invalid claim state operation: {}&quot;, ex.getMessage());</span>
         
-<span class="nc" id="L95">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
-<span class="nc" id="L96">                .timestamp(LocalDateTime.now())</span>
-<span class="nc" id="L97">                .status(HttpStatus.BAD_REQUEST.value())</span>
-<span class="nc" id="L98">                .error(&quot;Invalid Claim State&quot;)</span>
-<span class="nc" id="L99">                .message(ex.getMessage())</span>
-<span class="nc" id="L100">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
-<span class="nc" id="L101">                .build();</span>
+<span class="fc" id="L95">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="fc" id="L96">                .timestamp(LocalDateTime.now())</span>
+<span class="fc" id="L97">                .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="fc" id="L98">                .error(&quot;Invalid Claim State&quot;)</span>
+<span class="fc" id="L99">                .message(ex.getMessage())</span>
+<span class="fc" id="L100">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="fc" id="L101">                .build();</span>
         
         // Add status information if available
-<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (ex.getCurrentStatus() != null) {</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (ex.getCurrentStatus() != null) {</span>
 <span class="nc" id="L105">            errorResponse.addDetail(&quot;currentStatus&quot;, ex.getCurrentStatus().toString());</span>
         }
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (ex.getAttemptedStatus() != null) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        if (ex.getAttemptedStatus() != null) {</span>
 <span class="nc" id="L108">            errorResponse.addDetail(&quot;attemptedStatus&quot;, ex.getAttemptedStatus().toString());</span>
         }
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (ex.getClaimIdentifier() != null) {</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (ex.getClaimIdentifier() != null) {</span>
 <span class="nc" id="L111">            errorResponse.addDetail(&quot;claimIdentifier&quot;, ex.getClaimIdentifier());</span>
         }
         
-<span class="nc" id="L114">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L114">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
     }
 
     /**
@@ -130,28 +130,28 @@ import java.util.Map;
     public ResponseEntity&lt;ErrorResponse&gt; handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
         
-<span class="nc" id="L133">        logger.warn(&quot;Validation failed: {} validation errors&quot;, ex.getBindingResult().getErrorCount());</span>
+<span class="fc" id="L133">        logger.warn(&quot;Validation failed: {} validation errors&quot;, ex.getBindingResult().getErrorCount());</span>
         
         // Extract field-level validation errors
-<span class="nc" id="L136">        Map&lt;String, String&gt; validationErrors = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L137">        ex.getBindingResult().getAllErrors().forEach((error) -&gt; {</span>
-<span class="nc" id="L138">            String fieldName = ((FieldError) error).getField();</span>
-<span class="nc" id="L139">            String errorMessage = error.getDefaultMessage();</span>
-<span class="nc" id="L140">            validationErrors.put(fieldName, errorMessage);</span>
-<span class="nc" id="L141">        });</span>
+<span class="fc" id="L136">        Map&lt;String, String&gt; validationErrors = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L137">        ex.getBindingResult().getAllErrors().forEach((error) -&gt; {</span>
+<span class="fc" id="L138">            String fieldName = ((FieldError) error).getField();</span>
+<span class="fc" id="L139">            String errorMessage = error.getDefaultMessage();</span>
+<span class="fc" id="L140">            validationErrors.put(fieldName, errorMessage);</span>
+<span class="fc" id="L141">        });</span>
         
-<span class="nc" id="L143">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
-<span class="nc" id="L144">                .timestamp(LocalDateTime.now())</span>
-<span class="nc" id="L145">                .status(HttpStatus.BAD_REQUEST.value())</span>
-<span class="nc" id="L146">                .error(&quot;Validation Failed&quot;)</span>
-<span class="nc" id="L147">                .message(&quot;Request validation failed&quot;)</span>
-<span class="nc" id="L148">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
-<span class="nc" id="L149">                .build();</span>
+<span class="fc" id="L143">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="fc" id="L144">                .timestamp(LocalDateTime.now())</span>
+<span class="fc" id="L145">                .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="fc" id="L146">                .error(&quot;Validation Failed&quot;)</span>
+<span class="fc" id="L147">                .message(&quot;Request validation failed&quot;)</span>
+<span class="fc" id="L148">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="fc" id="L149">                .build();</span>
         
         // Add validation errors as details
-<span class="nc" id="L152">        errorResponse.addDetail(&quot;validationErrors&quot;, validationErrors);</span>
+<span class="fc" id="L152">        errorResponse.addDetail(&quot;validationErrors&quot;, validationErrors);</span>
         
-<span class="nc" id="L154">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L154">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
     }
 
     /**
@@ -168,17 +168,17 @@ import java.util.Map;
     public ResponseEntity&lt;ErrorResponse&gt; handleIllegalArgumentException(
             IllegalArgumentException ex, WebRequest request) {
         
-<span class="nc" id="L171">        logger.warn(&quot;Illegal argument: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L171">        logger.warn(&quot;Illegal argument: {}&quot;, ex.getMessage());</span>
         
-<span class="nc" id="L173">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
-<span class="nc" id="L174">                .timestamp(LocalDateTime.now())</span>
-<span class="nc" id="L175">                .status(HttpStatus.BAD_REQUEST.value())</span>
-<span class="nc" id="L176">                .error(&quot;Invalid Request&quot;)</span>
-<span class="nc" id="L177">                .message(ex.getMessage())</span>
-<span class="nc" id="L178">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
-<span class="nc" id="L179">                .build();</span>
+<span class="fc" id="L173">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="fc" id="L174">                .timestamp(LocalDateTime.now())</span>
+<span class="fc" id="L175">                .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="fc" id="L176">                .error(&quot;Invalid Request&quot;)</span>
+<span class="fc" id="L177">                .message(ex.getMessage())</span>
+<span class="fc" id="L178">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="fc" id="L179">                .build();</span>
         
-<span class="nc" id="L181">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L181">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
     }
 
     /**
@@ -223,24 +223,24 @@ import java.util.Map;
     public ResponseEntity&lt;ErrorResponse&gt; handleRuntimeException(
             RuntimeException ex, WebRequest request) {
         
-<span class="nc" id="L226">        logger.error(&quot;Unexpected runtime exception&quot;, ex);</span>
+<span class="fc" id="L226">        logger.error(&quot;Unexpected runtime exception&quot;, ex);</span>
         
-<span class="nc" id="L228">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
-<span class="nc" id="L229">                .timestamp(LocalDateTime.now())</span>
-<span class="nc" id="L230">                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
-<span class="nc" id="L231">                .error(&quot;Internal Server Error&quot;)</span>
-<span class="nc" id="L232">                .message(&quot;An unexpected error occurred. Please try again later.&quot;)</span>
-<span class="nc" id="L233">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
-<span class="nc" id="L234">                .build();</span>
+<span class="fc" id="L228">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="fc" id="L229">                .timestamp(LocalDateTime.now())</span>
+<span class="fc" id="L230">                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
+<span class="fc" id="L231">                .error(&quot;Internal Server Error&quot;)</span>
+<span class="fc" id="L232">                .message(&quot;An unexpected error occurred. Please try again later.&quot;)</span>
+<span class="fc" id="L233">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="fc" id="L234">                .build();</span>
         
         // In development, include exception details
         // In production, this should be removed for security
-<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (isDevelopmentMode()) {</span>
-<span class="nc" id="L239">            errorResponse.addDetail(&quot;exceptionType&quot;, ex.getClass().getSimpleName());</span>
-<span class="nc" id="L240">            errorResponse.addDetail(&quot;exceptionMessage&quot;, ex.getMessage());</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        if (isDevelopmentMode()) {</span>
+<span class="fc" id="L239">            errorResponse.addDetail(&quot;exceptionType&quot;, ex.getClass().getSimpleName());</span>
+<span class="fc" id="L240">            errorResponse.addDetail(&quot;exceptionMessage&quot;, ex.getMessage());</span>
         }
         
-<span class="nc" id="L243">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="fc" id="L243">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
     }
 
     /**
@@ -257,17 +257,17 @@ import java.util.Map;
     public ResponseEntity&lt;ErrorResponse&gt; handleGenericException(
             Exception ex, WebRequest request) {
         
-<span class="nc" id="L260">        logger.error(&quot;Unexpected exception&quot;, ex);</span>
+<span class="fc" id="L260">        logger.error(&quot;Unexpected exception&quot;, ex);</span>
         
-<span class="nc" id="L262">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
-<span class="nc" id="L263">                .timestamp(LocalDateTime.now())</span>
-<span class="nc" id="L264">                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
-<span class="nc" id="L265">                .error(&quot;Internal Server Error&quot;)</span>
-<span class="nc" id="L266">                .message(&quot;An unexpected error occurred. Please contact support.&quot;)</span>
-<span class="nc" id="L267">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
-<span class="nc" id="L268">                .build();</span>
+<span class="fc" id="L262">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="fc" id="L263">                .timestamp(LocalDateTime.now())</span>
+<span class="fc" id="L264">                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
+<span class="fc" id="L265">                .error(&quot;Internal Server Error&quot;)</span>
+<span class="fc" id="L266">                .message(&quot;An unexpected error occurred. Please contact support.&quot;)</span>
+<span class="fc" id="L267">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="fc" id="L268">                .build();</span>
         
-<span class="nc" id="L270">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="fc" id="L270">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
     }
 
     /**
@@ -279,7 +279,7 @@ import java.util.Map;
      */
     private boolean isDevelopmentMode() {
         // Simple check - in real applications, use Spring profiles
-<span class="nc" id="L282">        return true; // Set to false in production</span>
+<span class="fc" id="L282">        return true; // Set to false in production</span>
     }
 
     /**
@@ -298,7 +298,7 @@ import java.util.Map;
 
         // Builder pattern for easy construction
         public static ErrorResponseBuilder builder() {
-<span class="nc" id="L301">            return new ErrorResponseBuilder();</span>
+<span class="fc" id="L301">            return new ErrorResponseBuilder();</span>
         }
 
         // Constructors
@@ -306,44 +306,44 @@ import java.util.Map;
 <span class="nc" id="L306">            this.details = new HashMap&lt;&gt;();</span>
 <span class="nc" id="L307">        }</span>
 
-<span class="nc" id="L309">        public ErrorResponse(LocalDateTime timestamp, int status, String error, String message, String path) {</span>
-<span class="nc" id="L310">            this.timestamp = timestamp;</span>
-<span class="nc" id="L311">            this.status = status;</span>
-<span class="nc" id="L312">            this.error = error;</span>
-<span class="nc" id="L313">            this.message = message;</span>
-<span class="nc" id="L314">            this.path = path;</span>
-<span class="nc" id="L315">            this.details = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L316">        }</span>
+<span class="fc" id="L309">        public ErrorResponse(LocalDateTime timestamp, int status, String error, String message, String path) {</span>
+<span class="fc" id="L310">            this.timestamp = timestamp;</span>
+<span class="fc" id="L311">            this.status = status;</span>
+<span class="fc" id="L312">            this.error = error;</span>
+<span class="fc" id="L313">            this.message = message;</span>
+<span class="fc" id="L314">            this.path = path;</span>
+<span class="fc" id="L315">            this.details = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L316">        }</span>
 
         // Method to add additional details
         public void addDetail(String key, Object value) {
-<span class="nc bnc" id="L320" title="All 2 branches missed.">            if (details == null) {</span>
+<span class="pc bpc" id="L320" title="1 of 2 branches missed.">            if (details == null) {</span>
 <span class="nc" id="L321">                details = new HashMap&lt;&gt;();</span>
             }
-<span class="nc" id="L323">            details.put(key, value);</span>
-<span class="nc" id="L324">        }</span>
+<span class="fc" id="L323">            details.put(key, value);</span>
+<span class="fc" id="L324">        }</span>
 
         // Getters and Setters
-<span class="nc" id="L327">        public LocalDateTime getTimestamp() { return timestamp; }</span>
+<span class="fc" id="L327">        public LocalDateTime getTimestamp() { return timestamp; }</span>
 <span class="nc" id="L328">        public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }</span>
 
-<span class="nc" id="L330">        public int getStatus() { return status; }</span>
+<span class="fc" id="L330">        public int getStatus() { return status; }</span>
 <span class="nc" id="L331">        public void setStatus(int status) { this.status = status; }</span>
 
-<span class="nc" id="L333">        public String getError() { return error; }</span>
+<span class="fc" id="L333">        public String getError() { return error; }</span>
 <span class="nc" id="L334">        public void setError(String error) { this.error = error; }</span>
 
-<span class="nc" id="L336">        public String getMessage() { return message; }</span>
+<span class="fc" id="L336">        public String getMessage() { return message; }</span>
 <span class="nc" id="L337">        public void setMessage(String message) { this.message = message; }</span>
 
-<span class="nc" id="L339">        public String getPath() { return path; }</span>
+<span class="fc" id="L339">        public String getPath() { return path; }</span>
 <span class="nc" id="L340">        public void setPath(String path) { this.path = path; }</span>
 
-<span class="nc" id="L342">        public Map&lt;String, Object&gt; getDetails() { return details; }</span>
+<span class="fc" id="L342">        public Map&lt;String, Object&gt; getDetails() { return details; }</span>
 <span class="nc" id="L343">        public void setDetails(Map&lt;String, Object&gt; details) { this.details = details; }</span>
 
         // Builder class
-<span class="nc" id="L346">        public static class ErrorResponseBuilder {</span>
+<span class="fc" id="L346">        public static class ErrorResponseBuilder {</span>
             private LocalDateTime timestamp;
             private int status;
             private String error;
@@ -351,32 +351,32 @@ import java.util.Map;
             private String path;
 
             public ErrorResponseBuilder timestamp(LocalDateTime timestamp) {
-<span class="nc" id="L354">                this.timestamp = timestamp;</span>
-<span class="nc" id="L355">                return this;</span>
+<span class="fc" id="L354">                this.timestamp = timestamp;</span>
+<span class="fc" id="L355">                return this;</span>
             }
 
             public ErrorResponseBuilder status(int status) {
-<span class="nc" id="L359">                this.status = status;</span>
-<span class="nc" id="L360">                return this;</span>
+<span class="fc" id="L359">                this.status = status;</span>
+<span class="fc" id="L360">                return this;</span>
             }
 
             public ErrorResponseBuilder error(String error) {
-<span class="nc" id="L364">                this.error = error;</span>
-<span class="nc" id="L365">                return this;</span>
+<span class="fc" id="L364">                this.error = error;</span>
+<span class="fc" id="L365">                return this;</span>
             }
 
             public ErrorResponseBuilder message(String message) {
-<span class="nc" id="L369">                this.message = message;</span>
-<span class="nc" id="L370">                return this;</span>
+<span class="fc" id="L369">                this.message = message;</span>
+<span class="fc" id="L370">                return this;</span>
             }
 
             public ErrorResponseBuilder path(String path) {
-<span class="nc" id="L374">                this.path = path;</span>
-<span class="nc" id="L375">                return this;</span>
+<span class="fc" id="L374">                this.path = path;</span>
+<span class="fc" id="L375">                return this;</span>
             }
 
             public ErrorResponse build() {
-<span class="nc" id="L379">                return new ErrorResponse(timestamp, status, error, message, path);</span>
+<span class="fc" id="L379">                return new ErrorResponse(timestamp, status, error, message, path);</span>
             }
         }
     }

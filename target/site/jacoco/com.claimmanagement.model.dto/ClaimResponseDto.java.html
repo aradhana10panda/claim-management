@@ -236,7 +236,7 @@ public class ClaimResponseDto {
      */
     @Schema(description = &quot;Indicates if the claim is in a terminal state&quot;)
     public boolean isTerminal() {
-<span class="nc bnc" id="L239" title="All 4 branches missed.">        return status != null &amp;&amp; status.isTerminal();</span>
+<span class="pc bpc" id="L239" title="2 of 4 branches missed.">        return status != null &amp;&amp; status.isTerminal();</span>
     }
 
     /**
@@ -246,7 +246,7 @@ public class ClaimResponseDto {
      */
     @Schema(description = &quot;Indicates if the claim was successfully processed&quot;)
     public boolean isSuccessful() {
-<span class="nc bnc" id="L249" title="All 4 branches missed.">        return status != null &amp;&amp; status.isSuccessful();</span>
+<span class="pc bpc" id="L249" title="2 of 4 branches missed.">        return status != null &amp;&amp; status.isSuccessful();</span>
     }
 
     /**
