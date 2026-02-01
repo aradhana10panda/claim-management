@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClaimStatus.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement.model.entity</a> &gt; <span class="el_source">ClaimStatus.java</span></div><h1>ClaimStatus.java</h1><pre class="source lang-java linenums">package com.claimmanagement.model.entity;
+
+/**
+ * Enumeration representing the various states of a claim in its lifecycle
+ * 
+ * Enums in Java are:
+ * - Type-safe constants that prevent invalid values
+ * - Implicitly final and extend java.lang.Enum
+ * - Can have fields, methods, and constructors
+ * - Provide compile-time safety for status values
+ * 
+ * Benefits of using enums for status:
+ * 1. Type Safety: Prevents invalid status values
+ * 2. Code Readability: Clear, self-documenting status names
+ * 3. IDE Support: Auto-completion and refactoring support
+ * 4. Performance: Efficient comparison using == operator
+ * 
+ * @author Claim Management Team
+ */
+<span class="fc" id="L20">public enum ClaimStatus {</span>
+    
+    /**
+     * SUBMITTED - Initial state when a claim is first submitted
+     * This is typically the starting point of the claim lifecycle
+     */
+<span class="fc" id="L26">    SUBMITTED(&quot;Claim has been submitted and is awaiting initial review&quot;),</span>
+    
+    /**
+     * UNDER_REVIEW - Claim is being actively reviewed by claims adjusters
+     * Documents are being verified and investigation is in progress
+     */
+<span class="fc" id="L32">    UNDER_REVIEW(&quot;Claim is under review by claims department&quot;),</span>
+    
+    /**
+     * APPROVED - Claim has been approved for payment
+     * All requirements met and payment processing can begin
+     */
+<span class="fc" id="L38">    APPROVED(&quot;Claim has been approved for payment&quot;),</span>
+    
+    /**
+     * REJECTED - Claim has been rejected
+     * Does not meet policy requirements or insufficient documentation
+     */
+<span class="fc" id="L44">    REJECTED(&quot;Claim has been rejected&quot;),</span>
+    
+    /**
+     * PAID - Claim has been paid out to the claimant
+     * Final successful state of the claim process
+     */
+<span class="fc" id="L50">    PAID(&quot;Claim has been paid&quot;),</span>
+    
+    /**
+     * CANCELLED - Claim has been cancelled
+     * May be cancelled by claimant or due to policy issues
+     */
+<span class="fc" id="L56">    CANCELLED(&quot;Claim has been cancelled&quot;);</span>
+
+    /**
+     * Human-readable description of the status
+     * Useful for UI display and logging
+     */
+    private final String description;
+
+    /**
+     * Constructor for enum constants
+     * Each enum constant calls this constructor with its description
+     * 
+     * @param description Human-readable description of the status
+     */
+<span class="fc" id="L70">    ClaimStatus(String description) {</span>
+<span class="fc" id="L71">        this.description = description;</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Gets the human-readable description of the status
+     * 
+     * @return Description of the claim status
+     */
+    public String getDescription() {
+<span class="fc" id="L80">        return description;</span>
+    }
+
+    /**
+     * Checks if the current status allows transition to a new status
+     * Implements business rules for valid status transitions
+     * 
+     * Business Rules:
+     * - SUBMITTED can go to UNDER_REVIEW or CANCELLED
+     * - UNDER_REVIEW can go to APPROVED, REJECTED, or CANCELLED
+     * - APPROVED can go to PAID or CANCELLED
+     * - REJECTED and PAID are terminal states (no further transitions)
+     * - CANCELLED is a terminal state
+     * 
+     * @param newStatus The status to transition to
+     * @return true if transition is allowed, false otherwise
+     */
+    public boolean canTransitionTo(ClaimStatus newStatus) {
+<span class="fc bfc" id="L98" title="All 4 branches covered.">        return switch (this) {</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">            case SUBMITTED -&gt; newStatus == UNDER_REVIEW || newStatus == CANCELLED;</span>
+<span class="fc bfc" id="L100" title="All 6 branches covered.">            case UNDER_REVIEW -&gt; newStatus == APPROVED || newStatus == REJECTED || newStatus == CANCELLED;</span>
+<span class="fc bfc" id="L101" title="All 4 branches covered.">            case APPROVED -&gt; newStatus == PAID || newStatus == CANCELLED;</span>
+<span class="fc" id="L102">            case REJECTED, PAID, CANCELLED -&gt; false; // Terminal states</span>
+        };
+    }
+
+    /**
+     * Gets all valid next statuses from the current status
+     * Useful for UI dropdowns and validation
+     * 
+     * @return Array of valid next statuses
+     */
+    public ClaimStatus[] getValidNextStatuses() {
+<span class="fc bfc" id="L113" title="All 4 branches covered.">        return switch (this) {</span>
+<span class="fc" id="L114">            case SUBMITTED -&gt; new ClaimStatus[]{UNDER_REVIEW, CANCELLED};</span>
+<span class="fc" id="L115">            case UNDER_REVIEW -&gt; new ClaimStatus[]{APPROVED, REJECTED, CANCELLED};</span>
+<span class="fc" id="L116">            case APPROVED -&gt; new ClaimStatus[]{PAID, CANCELLED};</span>
+<span class="fc" id="L117">            case REJECTED, PAID, CANCELLED -&gt; new ClaimStatus[]{}; // No valid transitions</span>
+        };
+    }
+
+    /**
+     * Checks if the current status is a terminal state
+     * Terminal states don't allow further transitions
+     * 
+     * @return true if this is a terminal status
+     */
+    public boolean isTerminal() {
+<span class="fc bfc" id="L128" title="All 6 branches covered.">        return this == REJECTED || this == PAID || this == CANCELLED;</span>
+    }
+
+    /**
+     * Checks if the current status represents a successful completion
+     * 
+     * @return true if the claim was successfully processed
+     */
+    public boolean isSuccessful() {
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        return this == PAID;</span>
+    }
+
+    /**
+     * Override toString to return the enum name
+     * This is useful for JSON serialization and logging
+     * 
+     * @return String representation of the enum
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L148">        return name();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

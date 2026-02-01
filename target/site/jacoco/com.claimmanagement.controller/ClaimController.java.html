@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClaimController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement.controller</a> &gt; <span class="el_source">ClaimController.java</span></div><h1>ClaimController.java</h1><pre class="source lang-java linenums">package com.claimmanagement.controller;
+
+import com.claimmanagement.model.dto.ClaimRequestDto;
+import com.claimmanagement.model.dto.ClaimResponseDto;
+import com.claimmanagement.model.entity.ClaimStatus;
+import com.claimmanagement.service.ClaimService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * REST Controller for Claim Management Operations
+ * 
+ * REST Controller Best Practices:
+ * 1. Use appropriate HTTP methods (GET, POST, PUT, PATCH, DELETE)
+ * 2. Follow RESTful URL conventions
+ * 3. Use proper HTTP status codes
+ * 4. Validate input using @Valid annotation
+ * 5. Document APIs using OpenAPI/Swagger annotations
+ * 6. Handle exceptions gracefully (delegated to GlobalExceptionHandler)
+ * 7. Use DTOs for request/response to decouple API from internal models
+ * 
+ * Spring Annotations:
+ * @RestController - Combines @Controller and @ResponseBody
+ * @RequestMapping - Maps HTTP requests to handler methods
+ * @GetMapping, @PostMapping, etc. - HTTP method-specific mappings
+ * @PathVariable - Extracts values from URL path
+ * @RequestParam - Extracts query parameters
+ * @RequestBody - Binds HTTP request body to method parameter
+ * @Valid - Triggers validation of request DTOs
+ * 
+ * OpenAPI/Swagger Annotations:
+ * @Tag - Groups related operations
+ * @Operation - Describes individual API operations
+ * @ApiResponses - Documents possible response codes
+ * @Parameter - Documents method parameters
+ * @Schema - Provides schema information for request/response bodies
+ * 
+ * @author Claim Management Team
+ */
+@RestController
+@RequestMapping(&quot;/claims&quot;)
+@Tag(name = &quot;Claim Management&quot;, description = &quot;APIs for managing insurance claims&quot;)
+public class ClaimController {
+
+    /**
+     * Logger for this controller
+     */
+<span class="nc" id="L69">    private static final Logger logger = LoggerFactory.getLogger(ClaimController.class);</span>
+
+    /**
+     * Service layer dependency
+     * Constructor injection is preferred over field injection
+     */
+    private final ClaimService claimService;
+
+    /**
+     * Constructor for dependency injection
+     * 
+     * @param claimService The claim service implementation
+     */
+    @Autowired
+<span class="nc" id="L83">    public ClaimController(ClaimService claimService) {</span>
+<span class="nc" id="L84">        this.claimService = claimService;</span>
+<span class="nc" id="L85">    }</span>
+
+    /**
+     * Creates a new claim
+     * 
+     * HTTP Method: POST
+     * URL: /api/v1/claims
+     * Request Body: ClaimRequestDto (JSON)
+     * Response: ClaimResponseDto with HTTP 201 (Created)
+     * 
+     * @Valid annotation triggers validation of the request DTO
+     * If validation fails, MethodArgumentNotValidException is thrown
+     * and handled by GlobalExceptionHandler
+     */
+    @PostMapping
+    @Operation(summary = &quot;Create a new claim&quot;, 
+               description = &quot;Creates a new insurance claim with the provided details&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Claim created successfully&quot;,
+                    content = @Content(schema = @Schema(implementation = ClaimResponseDto.class))),
+        @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request data&quot;),
+        @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+    })
+    public ResponseEntity&lt;ClaimResponseDto&gt; createClaim(
+            @Valid @RequestBody ClaimRequestDto requestDto) {
+        
+<span class="nc" id="L111">        logger.info(&quot;Creating new claim for policy: {}&quot;, requestDto.getPolicyNumber());</span>
+        
+<span class="nc" id="L113">        ClaimResponseDto responseDto = claimService.createClaim(requestDto);</span>
+        
+<span class="nc" id="L115">        logger.info(&quot;Successfully created claim: {}&quot;, responseDto.getClaimNumber());</span>
+        
+        // Return 201 Created with the created claim
+<span class="nc" id="L118">        return new ResponseEntity&lt;&gt;(responseDto, HttpStatus.CREATED);</span>
+    }
+
+    /**
+     * Retrieves a claim by its ID
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/{id}
+     * Path Variable: id (Long)
+     * Response: ClaimResponseDto with HTTP 200 (OK)
+     * 
+     * @PathVariable extracts the {id} from the URL path
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get claim by ID&quot;, 
+               description = &quot;Retrieves a claim by its unique identifier&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Claim found&quot;,
+                    content = @Content(schema = @Schema(implementation = ClaimResponseDto.class))),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Claim not found&quot;),
+        @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+    })
+    public ResponseEntity&lt;ClaimResponseDto&gt; getClaimById(
+            @Parameter(description = &quot;Unique identifier of the claim&quot;, required = true)
+            @PathVariable Long id) {
+        
+<span class="nc" id="L144">        logger.debug(&quot;Retrieving claim by ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L146">        ClaimResponseDto responseDto = claimService.getClaimById(id);</span>
+        
+<span class="nc" id="L148">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * Retrieves a claim by its claim number
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/number/{claimNumber}
+     * Path Variable: claimNumber (String)
+     * Response: ClaimResponseDto with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/number/{claimNumber}&quot;)
+    @Operation(summary = &quot;Get claim by claim number&quot;, 
+               description = &quot;Retrieves a claim by its business identifier (claim number)&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Claim found&quot;),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Claim not found&quot;)
+    })
+    public ResponseEntity&lt;ClaimResponseDto&gt; getClaimByNumber(
+            @Parameter(description = &quot;Unique claim number&quot;, required = true)
+            @PathVariable String claimNumber) {
+        
+<span class="nc" id="L170">        logger.debug(&quot;Retrieving claim by number: {}&quot;, claimNumber);</span>
+        
+<span class="nc" id="L172">        ClaimResponseDto responseDto = claimService.getClaimByNumber(claimNumber);</span>
+        
+<span class="nc" id="L174">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * Retrieves all claims with pagination
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims?page=0&amp;size=10&amp;sort=createdAt,desc
+     * Query Parameters: page, size, sort
+     * Response: Page&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     * 
+     * Pagination Parameters:
+     * - page: Page number (0-based)
+     * - size: Number of items per page
+     * - sort: Sort criteria (property,direction)
+     * 
+     * @RequestParam with defaultValue provides sensible defaults
+     */
+    @GetMapping
+    @Operation(summary = &quot;Get all claims with pagination&quot;, 
+               description = &quot;Retrieves all claims with pagination and sorting support&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Claims retrieved successfully&quot;)
+    })
+    public ResponseEntity&lt;Page&lt;ClaimResponseDto&gt;&gt; getAllClaims(
+            @Parameter(description = &quot;Page number (0-based)&quot;)
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            
+            @Parameter(description = &quot;Number of items per page&quot;)
+            @RequestParam(defaultValue = &quot;10&quot;) int size,
+            
+            @Parameter(description = &quot;Sort criteria (property,direction)&quot;)
+            @RequestParam(defaultValue = &quot;createdAt&quot;) String sortBy,
+            
+            @Parameter(description = &quot;Sort direction (asc or desc)&quot;)
+            @RequestParam(defaultValue = &quot;desc&quot;) String sortDirection) {
+        
+<span class="nc" id="L211">        logger.debug(&quot;Retrieving all claims - page: {}, size: {}, sort: {} {}&quot;, </span>
+<span class="nc" id="L212">                    page, size, sortBy, sortDirection);</span>
+        
+        // Create Sort object
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        Sort.Direction direction = sortDirection.equalsIgnoreCase(&quot;desc&quot;) ? </span>
+<span class="nc" id="L216">                                  Sort.Direction.DESC : Sort.Direction.ASC;</span>
+<span class="nc" id="L217">        Sort sort = Sort.by(direction, sortBy);</span>
+        
+        // Create Pageable object
+<span class="nc" id="L220">        Pageable pageable = PageRequest.of(page, size, sort);</span>
+        
+<span class="nc" id="L222">        Page&lt;ClaimResponseDto&gt; claimsPage = claimService.getAllClaims(pageable);</span>
+        
+<span class="nc" id="L224">        return ResponseEntity.ok(claimsPage);</span>
+    }
+
+    /**
+     * Updates an existing claim
+     * 
+     * HTTP Method: PUT
+     * URL: /api/v1/claims/{id}
+     * Path Variable: id (Long)
+     * Request Body: ClaimRequestDto (JSON)
+     * Response: ClaimResponseDto with HTTP 200 (OK)
+     * 
+     * PUT is used for complete resource replacement
+     */
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Update a claim&quot;, 
+               description = &quot;Updates an existing claim with new information&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Claim updated successfully&quot;),
+        @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request data&quot;),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Claim not found&quot;),
+        @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Claim cannot be modified in current state&quot;)
+    })
+    public ResponseEntity&lt;ClaimResponseDto&gt; updateClaim(
+            @Parameter(description = &quot;Unique identifier of the claim&quot;, required = true)
+            @PathVariable Long id,
+            
+            @Valid @RequestBody ClaimRequestDto requestDto) {
+        
+<span class="nc" id="L253">        logger.info(&quot;Updating claim with ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L255">        ClaimResponseDto responseDto = claimService.updateClaim(id, requestDto);</span>
+        
+<span class="nc" id="L257">        logger.info(&quot;Successfully updated claim: {}&quot;, responseDto.getClaimNumber());</span>
+        
+<span class="nc" id="L259">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * Updates only the status of a claim
+     * 
+     * HTTP Method: PATCH
+     * URL: /api/v1/claims/{id}/status
+     * Path Variable: id (Long)
+     * Request Parameter: status (ClaimStatus)
+     * Response: ClaimResponseDto with HTTP 200 (OK)
+     * 
+     * PATCH is used for partial resource updates
+     */
+    @PatchMapping(&quot;/{id}/status&quot;)
+    @Operation(summary = &quot;Update claim status&quot;, 
+               description = &quot;Updates only the status of an existing claim&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Claim status updated successfully&quot;),
+        @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid status transition&quot;),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Claim not found&quot;)
+    })
+    public ResponseEntity&lt;ClaimResponseDto&gt; updateClaimStatus(
+            @Parameter(description = &quot;Unique identifier of the claim&quot;, required = true)
+            @PathVariable Long id,
+            
+            @Parameter(description = &quot;New status for the claim&quot;, required = true)
+            @RequestParam ClaimStatus status) {
+        
+<span class="nc" id="L288">        logger.info(&quot;Updating claim status for ID: {} to {}&quot;, id, status);</span>
+        
+<span class="nc" id="L290">        ClaimResponseDto responseDto = claimService.updateClaimStatus(id, status);</span>
+        
+<span class="nc" id="L292">        logger.info(&quot;Successfully updated claim status: {} -&gt; {}&quot;, </span>
+<span class="nc" id="L293">                   responseDto.getClaimNumber(), status);</span>
+        
+<span class="nc" id="L295">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * Deletes a claim
+     * 
+     * HTTP Method: DELETE
+     * URL: /api/v1/claims/{id}
+     * Path Variable: id (Long)
+     * Response: HTTP 204 (No Content)
+     * 
+     * DELETE returns 204 No Content on successful deletion
+     */
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Delete a claim&quot;, 
+               description = &quot;Deletes an existing claim (only allowed for SUBMITTED claims)&quot;)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = &quot;204&quot;, description = &quot;Claim deleted successfully&quot;),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Claim not found&quot;),
+        @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Claim cannot be deleted in current state&quot;)
+    })
+    public ResponseEntity&lt;Void&gt; deleteClaim(
+            @Parameter(description = &quot;Unique identifier of the claim&quot;, required = true)
+            @PathVariable Long id) {
+        
+<span class="nc" id="L320">        logger.info(&quot;Deleting claim with ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L322">        claimService.deleteClaim(id);</span>
+        
+<span class="nc" id="L324">        logger.info(&quot;Successfully deleted claim with ID: {}&quot;, id);</span>
+        
+        // Return 204 No Content
+<span class="nc" id="L327">        return ResponseEntity.noContent().build();</span>
+    }
+
+    /**
+     * Searches claims by multiple criteria
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/search?policyNumber=POL123&amp;status=SUBMITTED
+     * Query Parameters: policyNumber, status, claimantEmail, page, size, sort
+     * Response: Page&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/search&quot;)
+    @Operation(summary = &quot;Search claims&quot;, 
+               description = &quot;Searches claims by multiple optional criteria&quot;)
+    public ResponseEntity&lt;Page&lt;ClaimResponseDto&gt;&gt; searchClaims(
+            @Parameter(description = &quot;Policy number to filter by&quot;)
+            @RequestParam(required = false) String policyNumber,
+            
+            @Parameter(description = &quot;Claim status to filter by&quot;)
+            @RequestParam(required = false) ClaimStatus status,
+            
+            @Parameter(description = &quot;Claimant email to filter by&quot;)
+            @RequestParam(required = false) String claimantEmail,
+            
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;10&quot;) int size,
+            @RequestParam(defaultValue = &quot;createdAt&quot;) String sortBy,
+            @RequestParam(defaultValue = &quot;desc&quot;) String sortDirection) {
+        
+<span class="nc" id="L356">        logger.debug(&quot;Searching claims with criteria - policy: {}, status: {}, email: {}&quot;, </span>
+                    policyNumber, status, claimantEmail);
+        
+<span class="nc bnc" id="L359" title="All 2 branches missed.">        Sort.Direction direction = sortDirection.equalsIgnoreCase(&quot;desc&quot;) ? </span>
+<span class="nc" id="L360">                                  Sort.Direction.DESC : Sort.Direction.ASC;</span>
+<span class="nc" id="L361">        Sort sort = Sort.by(direction, sortBy);</span>
+<span class="nc" id="L362">        Pageable pageable = PageRequest.of(page, size, sort);</span>
+        
+<span class="nc" id="L364">        Page&lt;ClaimResponseDto&gt; claimsPage = claimService.searchClaims(</span>
+            policyNumber, status, claimantEmail, pageable);
+        
+<span class="nc" id="L367">        return ResponseEntity.ok(claimsPage);</span>
+    }
+
+    /**
+     * Gets claims by policy number
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/policy/{policyNumber}
+     * Path Variable: policyNumber (String)
+     * Response: List&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/policy/{policyNumber}&quot;)
+    @Operation(summary = &quot;Get claims by policy number&quot;, 
+               description = &quot;Retrieves all claims associated with a specific policy&quot;)
+    public ResponseEntity&lt;List&lt;ClaimResponseDto&gt;&gt; getClaimsByPolicyNumber(
+            @Parameter(description = &quot;Policy number&quot;, required = true)
+            @PathVariable String policyNumber) {
+        
+<span class="nc" id="L385">        logger.debug(&quot;Retrieving claims for policy: {}&quot;, policyNumber);</span>
+        
+<span class="nc" id="L387">        List&lt;ClaimResponseDto&gt; claims = claimService.getClaimsByPolicyNumber(policyNumber);</span>
+        
+<span class="nc" id="L389">        return ResponseEntity.ok(claims);</span>
+    }
+
+    /**
+     * Gets claims by claimant email
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/claimant/{email}
+     * Path Variable: email (String)
+     * Response: List&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/claimant/{email}&quot;)
+    @Operation(summary = &quot;Get claims by claimant email&quot;, 
+               description = &quot;Retrieves all claims for a specific claimant&quot;)
+    public ResponseEntity&lt;List&lt;ClaimResponseDto&gt;&gt; getClaimsByClaimantEmail(
+            @Parameter(description = &quot;Claimant email address&quot;, required = true)
+            @PathVariable String email) {
+        
+<span class="nc" id="L407">        logger.debug(&quot;Retrieving claims for claimant: {}&quot;, email);</span>
+        
+<span class="nc" id="L409">        List&lt;ClaimResponseDto&gt; claims = claimService.getClaimsByClaimantEmail(email);</span>
+        
+<span class="nc" id="L411">        return ResponseEntity.ok(claims);</span>
+    }
+
+    /**
+     * Gets high-value claims
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/high-value?minimumAmount=10000
+     * Query Parameter: minimumAmount (BigDecimal)
+     * Response: List&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/high-value&quot;)
+    @Operation(summary = &quot;Get high-value claims&quot;, 
+               description = &quot;Retrieves claims above a specified amount threshold&quot;)
+    public ResponseEntity&lt;List&lt;ClaimResponseDto&gt;&gt; getHighValueClaims(
+            @Parameter(description = &quot;Minimum claim amount threshold&quot;)
+            @RequestParam(defaultValue = &quot;10000&quot;) BigDecimal minimumAmount) {
+        
+<span class="nc" id="L429">        logger.debug(&quot;Retrieving high-value claims above: {}&quot;, minimumAmount);</span>
+        
+<span class="nc" id="L431">        List&lt;ClaimResponseDto&gt; claims = claimService.getHighValueClaims(minimumAmount);</span>
+        
+<span class="nc" id="L433">        return ResponseEntity.ok(claims);</span>
+    }
+
+    /**
+     * Gets claims created within a date range
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/date-range?startDate=2024-01-01T00:00:00&amp;endDate=2024-12-31T23:59:59
+     * Query Parameters: startDate, endDate (LocalDateTime)
+     * Response: List&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     * 
+     * @DateTimeFormat specifies the expected date format
+     */
+    @GetMapping(&quot;/date-range&quot;)
+    @Operation(summary = &quot;Get claims by date range&quot;, 
+               description = &quot;Retrieves claims created within a specified date range&quot;)
+    public ResponseEntity&lt;List&lt;ClaimResponseDto&gt;&gt; getClaimsCreatedBetween(
+            @Parameter(description = &quot;Start date (inclusive)&quot;)
+            @RequestParam 
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+            LocalDateTime startDate,
+            
+            @Parameter(description = &quot;End date (inclusive)&quot;)
+            @RequestParam 
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+            LocalDateTime endDate) {
+        
+<span class="nc" id="L460">        logger.debug(&quot;Retrieving claims created between {} and {}&quot;, startDate, endDate);</span>
+        
+<span class="nc" id="L462">        List&lt;ClaimResponseDto&gt; claims = claimService.getClaimsCreatedBetween(startDate, endDate);</span>
+        
+<span class="nc" id="L464">        return ResponseEntity.ok(claims);</span>
+    }
+
+    /**
+     * Searches claims by claimant name
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/search-by-name?name=John
+     * Query Parameter: name (String)
+     * Response: List&lt;ClaimResponseDto&gt; with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/search-by-name&quot;)
+    @Operation(summary = &quot;Search claims by claimant name&quot;, 
+               description = &quot;Searches claims by partial claimant name match&quot;)
+    public ResponseEntity&lt;List&lt;ClaimResponseDto&gt;&gt; searchClaimsByClaimantName(
+            @Parameter(description = &quot;Claimant name to search for&quot;, required = true)
+            @RequestParam String name) {
+        
+<span class="nc" id="L482">        logger.debug(&quot;Searching claims by claimant name: {}&quot;, name);</span>
+        
+<span class="nc" id="L484">        List&lt;ClaimResponseDto&gt; claims = claimService.searchClaimsByClaimantName(name);</span>
+        
+<span class="nc" id="L486">        return ResponseEntity.ok(claims);</span>
+    }
+
+    /**
+     * Gets claim count by status
+     * 
+     * HTTP Method: GET
+     * URL: /api/v1/claims/count?status=SUBMITTED
+     * Query Parameter: status (ClaimStatus)
+     * Response: Long (count) with HTTP 200 (OK)
+     */
+    @GetMapping(&quot;/count&quot;)
+    @Operation(summary = &quot;Get claim count by status&quot;, 
+               description = &quot;Returns the number of claims with a specific status&quot;)
+    public ResponseEntity&lt;Long&gt; getClaimCountByStatus(
+            @Parameter(description = &quot;Claim status to count&quot;, required = true)
+            @RequestParam ClaimStatus status) {
+        
+<span class="nc" id="L504">        logger.debug(&quot;Getting claim count for status: {}&quot;, status);</span>
+        
+<span class="nc" id="L506">        long count = claimService.getClaimCountByStatus(status);</span>
+        
+<span class="nc" id="L508">        return ResponseEntity.ok(count);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

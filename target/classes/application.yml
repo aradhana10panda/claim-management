@@ -1,0 +1,72 @@
+# Spring Boot Application Configuration
+# YAML format is preferred over properties for better readability and structure
+
+# Server Configuration
+server:
+  port: 8080                          # Port on which the application will run
+  servlet:
+    context-path: /api/v1             # Base path for all REST endpoints
+  error:
+    include-message: always           # Include error messages in HTTP responses
+    include-binding-errors: always    # Include validation errors in responses
+
+# Spring Framework Configuration
+spring:
+  application:
+    name: claim-management-service    # Application name for service discovery
+  
+  # Database Configuration (H2 In-Memory Database)
+  datasource:
+    url: jdbc:h2:mem:claimdb         # H2 in-memory database URL
+    driver-class-name: org.h2.Driver # H2 database driver
+    username: sa                      # Default H2 username
+    password: password               # Database password
+    
+  # H2 Console Configuration (for development/debugging)
+  h2:
+    console:
+      enabled: true                   # Enable H2 web console
+      path: /h2-console              # H2 console access path
+      settings:
+        web-allow-others: false       # Security: only local access
+        
+  # JPA/Hibernate Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect  # H2 SQL dialect
+    hibernate:
+      ddl-auto: create-drop          # Database schema management strategy
+                                     # create-drop: Create schema on startup, drop on shutdown
+                                     # Options: none, validate, update, create, create-drop
+    show-sql: true                   # Log SQL statements (development only)
+    properties:
+      hibernate:
+        format_sql: true             # Format SQL statements for readability
+        use_sql_comments: true       # Add comments to generated SQL
+        
+# Logging Configuration
+logging:
+  level:
+    com.claimmanagement: DEBUG       # Debug level for our application packages
+    org.springframework.web: DEBUG   # Debug level for Spring Web (development)
+    org.hibernate.SQL: DEBUG        # Log SQL statements
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Log SQL parameters
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"  # Console log pattern
+    
+# Management/Actuator Configuration (Health checks, metrics)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics  # Expose health and info endpoints
+  endpoint:
+    health:
+      show-details: always           # Show detailed health information
+      
+# API Documentation Configuration
+springdoc:
+  api-docs:
+    path: /api-docs                  # OpenAPI JSON documentation path
+  swagger-ui:
+    path: /swagger-ui.html           # Swagger UI path
+    operationsSorter: method         # Sort operations by HTTP method

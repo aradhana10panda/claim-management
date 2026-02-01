@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Claim.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement.model.entity</a> &gt; <span class="el_source">Claim.java</span></div><h1>Claim.java</h1><pre class="source lang-java linenums">package com.claimmanagement.model.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+/**
+ * Claim Entity - Represents a claim in the database
+ * 
+ * JPA Annotations Explained:
+ * @Entity - Marks this class as a JPA entity (database table)
+ * @Table - Specifies the table name and constraints
+ * @Id - Marks the primary key field
+ * @GeneratedValue - Specifies how the primary key is generated
+ * @Column - Maps field to database column with constraints
+ * @Enumerated - Maps enum to database (STRING stores enum name, ORDINAL stores position)
+ * 
+ * Hibernate Annotations:
+ * @CreationTimestamp - Automatically sets timestamp when entity is created
+ * @UpdateTimestamp - Automatically updates timestamp when entity is modified
+ * 
+ * Validation Annotations:
+ * @NotBlank - Field cannot be null or empty (for Strings)
+ * @NotNull - Field cannot be null
+ * @Size - Validates string length
+ * @DecimalMin - Validates minimum decimal value
+ * @Email - Validates email format
+ * 
+ * @author Claim Management Team
+ */
+@Entity
+@Table(name = &quot;claims&quot;, 
+       indexes = {
+           @Index(name = &quot;idx_claim_number&quot;, columnList = &quot;claimNumber&quot;),
+           @Index(name = &quot;idx_policy_number&quot;, columnList = &quot;policyNumber&quot;),
+           @Index(name = &quot;idx_status&quot;, columnList = &quot;status&quot;)
+       })
+public class Claim {
+
+    /**
+     * Primary Key - Auto-generated using IDENTITY strategy
+     * IDENTITY strategy uses database auto-increment feature
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;)
+    private Long id;
+
+    /**
+     * Unique claim number - Business identifier for the claim
+     * @Column annotations specify database constraints
+     */
+    @NotBlank(message = &quot;Claim number is required&quot;)
+    @Size(max = 50, message = &quot;Claim number must not exceed 50 characters&quot;)
+    @Column(name = &quot;claim_number&quot;, nullable = false, unique = true, length = 50)
+    private String claimNumber;
+
+    /**
+     * Policy number associated with this claim
+     */
+    @NotBlank(message = &quot;Policy number is required&quot;)
+    @Size(max = 50, message = &quot;Policy number must not exceed 50 characters&quot;)
+    @Column(name = &quot;policy_number&quot;, nullable = false, length = 50)
+    private String policyNumber;
+
+    /**
+     * Name of the claimant (person making the claim)
+     */
+    @NotBlank(message = &quot;Claimant name is required&quot;)
+    @Size(max = 100, message = &quot;Claimant name must not exceed 100 characters&quot;)
+    @Column(name = &quot;claimant_name&quot;, nullable = false, length = 100)
+    private String claimantName;
+
+    /**
+     * Email address of the claimant
+     */
+    @NotBlank(message = &quot;Claimant email is required&quot;)
+    @Email(message = &quot;Invalid email format&quot;)
+    @Size(max = 100, message = &quot;Email must not exceed 100 characters&quot;)
+    @Column(name = &quot;claimant_email&quot;, nullable = false, length = 100)
+    private String claimantEmail;
+
+    /**
+     * Phone number of the claimant
+     */
+    @Size(max = 20, message = &quot;Phone number must not exceed 20 characters&quot;)
+    @Column(name = &quot;claimant_phone&quot;, length = 20)
+    private String claimantPhone;
+
+    /**
+     * Description of the claim
+     */
+    @NotBlank(message = &quot;Description is required&quot;)
+    @Size(max = 1000, message = &quot;Description must not exceed 1000 characters&quot;)
+    @Column(name = &quot;description&quot;, nullable = false, length = 1000)
+    private String description;
+
+    /**
+     * Claim amount - Using BigDecimal for precise monetary calculations
+     * precision = 10: total number of digits
+     * scale = 2: number of digits after decimal point
+     */
+    @NotNull(message = &quot;Claim amount is required&quot;)
+    @DecimalMin(value = &quot;0.01&quot;, message = &quot;Claim amount must be greater than 0&quot;)
+    @Column(name = &quot;claim_amount&quot;, nullable = false, precision = 10, scale = 2)
+    private BigDecimal claimAmount;
+
+    /**
+     * Current status of the claim
+     * @Enumerated(EnumType.STRING) stores the enum name as string in database
+     * This is preferred over ORDINAL as it's more readable and maintainable
+     */
+    @NotNull(message = &quot;Status is required&quot;)
+    @Enumerated(EnumType.STRING)
+    @Column(name = &quot;status&quot;, nullable = false, length = 20)
+    private ClaimStatus status;
+
+    /**
+     * Date when the incident occurred
+     */
+    @NotNull(message = &quot;Incident date is required&quot;)
+    @Column(name = &quot;incident_date&quot;, nullable = false)
+    private LocalDateTime incidentDate;
+
+    /**
+     * Automatically set when the claim is created
+     * @CreationTimestamp annotation handles this automatically
+     */
+    @CreationTimestamp
+    @Column(name = &quot;created_at&quot;, nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    /**
+     * Automatically updated when the claim is modified
+     * @UpdateTimestamp annotation handles this automatically
+     */
+    @UpdateTimestamp
+    @Column(name = &quot;updated_at&quot;, nullable = false)
+    private LocalDateTime updatedAt;
+
+    /**
+     * Default constructor required by JPA
+     * JPA uses reflection to create instances
+     */
+<span class="fc" id="L150">    public Claim() {</span>
+<span class="fc" id="L151">    }</span>
+
+    /**
+     * Constructor for creating new claims
+     * Excludes id, createdAt, updatedAt as they are auto-generated
+     */
+    public Claim(String claimNumber, String policyNumber, String claimantName, 
+                 String claimantEmail, String claimantPhone, String description, 
+<span class="fc" id="L159">                 BigDecimal claimAmount, ClaimStatus status, LocalDateTime incidentDate) {</span>
+<span class="fc" id="L160">        this.claimNumber = claimNumber;</span>
+<span class="fc" id="L161">        this.policyNumber = policyNumber;</span>
+<span class="fc" id="L162">        this.claimantName = claimantName;</span>
+<span class="fc" id="L163">        this.claimantEmail = claimantEmail;</span>
+<span class="fc" id="L164">        this.claimantPhone = claimantPhone;</span>
+<span class="fc" id="L165">        this.description = description;</span>
+<span class="fc" id="L166">        this.claimAmount = claimAmount;</span>
+<span class="fc" id="L167">        this.status = status;</span>
+<span class="fc" id="L168">        this.incidentDate = incidentDate;</span>
+<span class="fc" id="L169">    }</span>
+
+    // Getters and Setters with JavaDoc comments
+
+    /**
+     * Gets the unique identifier of the claim
+     * @return the claim ID
+     */
+    public Long getId() {
+<span class="fc" id="L178">        return id;</span>
+    }
+
+    /**
+     * Sets the unique identifier of the claim
+     * Note: This should typically only be used by JPA
+     * @param id the claim ID
+     */
+    public void setId(Long id) {
+<span class="fc" id="L187">        this.id = id;</span>
+<span class="fc" id="L188">    }</span>
+
+    public String getClaimNumber() {
+<span class="fc" id="L191">        return claimNumber;</span>
+    }
+
+    public void setClaimNumber(String claimNumber) {
+<span class="fc" id="L195">        this.claimNumber = claimNumber;</span>
+<span class="fc" id="L196">    }</span>
+
+    public String getPolicyNumber() {
+<span class="fc" id="L199">        return policyNumber;</span>
+    }
+
+    public void setPolicyNumber(String policyNumber) {
+<span class="fc" id="L203">        this.policyNumber = policyNumber;</span>
+<span class="fc" id="L204">    }</span>
+
+    public String getClaimantName() {
+<span class="fc" id="L207">        return claimantName;</span>
+    }
+
+    public void setClaimantName(String claimantName) {
+<span class="fc" id="L211">        this.claimantName = claimantName;</span>
+<span class="fc" id="L212">    }</span>
+
+    public String getClaimantEmail() {
+<span class="fc" id="L215">        return claimantEmail;</span>
+    }
+
+    public void setClaimantEmail(String claimantEmail) {
+<span class="fc" id="L219">        this.claimantEmail = claimantEmail;</span>
+<span class="fc" id="L220">    }</span>
+
+    public String getClaimantPhone() {
+<span class="fc" id="L223">        return claimantPhone;</span>
+    }
+
+    public void setClaimantPhone(String claimantPhone) {
+<span class="fc" id="L227">        this.claimantPhone = claimantPhone;</span>
+<span class="fc" id="L228">    }</span>
+
+    public String getDescription() {
+<span class="fc" id="L231">        return description;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="fc" id="L235">        this.description = description;</span>
+<span class="fc" id="L236">    }</span>
+
+    public BigDecimal getClaimAmount() {
+<span class="fc" id="L239">        return claimAmount;</span>
+    }
+
+    public void setClaimAmount(BigDecimal claimAmount) {
+<span class="fc" id="L243">        this.claimAmount = claimAmount;</span>
+<span class="fc" id="L244">    }</span>
+
+    public ClaimStatus getStatus() {
+<span class="fc" id="L247">        return status;</span>
+    }
+
+    public void setStatus(ClaimStatus status) {
+<span class="fc" id="L251">        this.status = status;</span>
+<span class="fc" id="L252">    }</span>
+
+    public LocalDateTime getIncidentDate() {
+<span class="fc" id="L255">        return incidentDate;</span>
+    }
+
+    public void setIncidentDate(LocalDateTime incidentDate) {
+<span class="fc" id="L259">        this.incidentDate = incidentDate;</span>
+<span class="fc" id="L260">    }</span>
+
+    public LocalDateTime getCreatedAt() {
+<span class="fc" id="L263">        return createdAt;</span>
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+<span class="fc" id="L267">        this.createdAt = createdAt;</span>
+<span class="fc" id="L268">    }</span>
+
+    public LocalDateTime getUpdatedAt() {
+<span class="fc" id="L271">        return updatedAt;</span>
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+<span class="fc" id="L275">        this.updatedAt = updatedAt;</span>
+<span class="fc" id="L276">    }</span>
+
+    /**
+     * Equals method for entity comparison
+     * Uses business key (claimNumber) instead of ID for comparison
+     * This is important for entities that might not have IDs yet
+     */
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L285" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="fc bfc" id="L286" title="All 4 branches covered.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L287">        Claim claim = (Claim) o;</span>
+<span class="fc" id="L288">        return Objects.equals(claimNumber, claim.claimNumber);</span>
+    }
+
+    /**
+     * HashCode method consistent with equals
+     * Uses business key (claimNumber) for hash calculation
+     */
+    @Override
+    public int hashCode() {
+<span class="fc" id="L297">        return Objects.hash(claimNumber);</span>
+    }
+
+    /**
+     * String representation of the claim
+     * Useful for debugging and logging
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L306">        return &quot;Claim{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, claimNumber='&quot; + claimNumber + '\'' +
+                &quot;, policyNumber='&quot; + policyNumber + '\'' +
+                &quot;, claimantName='&quot; + claimantName + '\'' +
+                &quot;, claimAmount=&quot; + claimAmount +
+                &quot;, status=&quot; + status +
+                &quot;, createdAt=&quot; + createdAt +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

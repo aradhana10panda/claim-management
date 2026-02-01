@@ -1,0 +1,1177 @@
+{
+	"info": {
+		"_postman_id": "claim-management-api-collection",
+		"name": "Claim Management API",
+		"description": "Complete API collection for testing the Claim Management Microservice. This collection includes all endpoints with sample requests and tests.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Application Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/actuator/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Check if the application is running and healthy"
+					},
+					"response": []
+				},
+				{
+					"name": "Application Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/actuator/info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"actuator",
+								"info"
+							]
+						},
+						"description": "Get application information and metadata"
+					},
+					"response": []
+				}
+			],
+			"description": "Health check and monitoring endpoints"
+		},
+		{
+			"name": "Claim CRUD Operations",
+			"item": [
+				{
+					"name": "Create Claim - Auto Insurance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has claim number\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.claimNumber).to.not.be.null;",
+									"    pm.globals.set(\"createdClaimId\", jsonData.id);",
+									"    pm.globals.set(\"createdClaimNumber\", jsonData.claimNumber);",
+									"});",
+									"",
+									"pm.test(\"Status is SUBMITTED\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"SUBMITTED\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"policyNumber\": \"POL-AUTO-2024-TEST001\",\n    \"claimantName\": \"John Test Smith\",\n    \"claimantEmail\": \"john.test@email.com\",\n    \"claimantPhone\": \"+1-555-TEST-001\",\n    \"description\": \"Test auto insurance claim - rear-end collision at Main St intersection\",\n    \"claimAmount\": 3500.75,\n    \"incidentDate\": \"2024-01-20T15:30:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims"
+							]
+						},
+						"description": "Create a new auto insurance claim"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Claim - Home Insurance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has claim number\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.claimNumber).to.not.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"policyNumber\": \"POL-HOME-2024-TEST002\",\n    \"claimantName\": \"Sarah Test Johnson\",\n    \"claimantEmail\": \"sarah.test@email.com\",\n    \"claimantPhone\": \"+1-555-TEST-002\",\n    \"description\": \"Test home insurance claim - water damage from burst pipe in basement\",\n    \"claimAmount\": 8750.50,\n    \"incidentDate\": \"2024-01-18T08:15:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims"
+							]
+						},
+						"description": "Create a new home insurance claim"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Claim by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains claim data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.not.be.null;",
+									"    pm.expect(jsonData.claimNumber).to.not.be.null;",
+									"    pm.expect(jsonData.policyNumber).to.not.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/{{createdClaimId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"{{createdClaimId}}"
+							]
+						},
+						"description": "Retrieve a claim by its unique ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Claim by Claim Number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Claim number matches\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.claimNumber).to.eql(pm.globals.get(\"createdClaimNumber\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/number/{{createdClaimNumber}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"number",
+								"{{createdClaimNumber}}"
+							]
+						},
+						"description": "Retrieve a claim by its business identifier (claim number)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Claim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Claim amount updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.claimAmount).to.eql(4500.75);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"policyNumber\": \"POL-AUTO-2024-TEST001\",\n    \"claimantName\": \"John Test Smith\",\n    \"claimantEmail\": \"john.test@email.com\",\n    \"claimantPhone\": \"+1-555-TEST-001\",\n    \"description\": \"Updated: Test auto insurance claim - rear-end collision with additional damage assessment\",\n    \"claimAmount\": 4500.75,\n    \"incidentDate\": \"2024-01-20T15:30:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/{{createdClaimId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"{{createdClaimId}}"
+							]
+						},
+						"description": "Update an existing claim with new information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Claim Status to UNDER_REVIEW",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status updated to UNDER_REVIEW\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"UNDER_REVIEW\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/{{createdClaimId}}/status?status=UNDER_REVIEW",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"{{createdClaimId}}",
+								"status"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "UNDER_REVIEW"
+								}
+							]
+						},
+						"description": "Update claim status to UNDER_REVIEW"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Claim Status to APPROVED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status updated to APPROVED\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"APPROVED\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/{{createdClaimId}}/status?status=APPROVED",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"{{createdClaimId}}",
+								"status"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "APPROVED"
+								}
+							]
+						},
+						"description": "Update claim status to APPROVED"
+					},
+					"response": []
+				}
+			],
+			"description": "Basic CRUD operations for claims"
+		},
+		{
+			"name": "Claim Search & Filter",
+			"item": [
+				{
+					"name": "Get All Claims (Paginated)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has pagination info\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.totalElements).to.be.a('number');",
+									"    pm.expect(jsonData.totalPages).to.be.a('number');",
+									"    pm.expect(jsonData.content).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims?page=0&size=5&sortBy=createdAt&sortDirection=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt"
+								},
+								{
+									"key": "sortDirection",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Get all claims with pagination and sorting"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Claims by Multiple Criteria",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is paginated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.content).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/search?status=SUBMITTED&page=0&size=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"search"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "SUBMITTED"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Search claims by status and other criteria"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Claims by Policy Number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/policy/POL-AUTO-2024-001",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"policy",
+								"POL-AUTO-2024-001"
+							]
+						},
+						"description": "Get all claims for a specific policy number"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Claims by Claimant Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/claimant/john.smith@email.com",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"claimant",
+								"john.smith@email.com"
+							]
+						},
+						"description": "Get all claims for a specific claimant email"
+					},
+					"response": []
+				},
+				{
+					"name": "Get High-Value Claims",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All claims are high-value\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    jsonData.forEach(function(claim) {",
+									"        pm.expect(claim.claimAmount).to.be.above(5000);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/high-value?minimumAmount=5000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"high-value"
+							],
+							"query": [
+								{
+									"key": "minimumAmount",
+									"value": "5000"
+								}
+							]
+						},
+						"description": "Get claims above a specified amount threshold"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Claims by Date Range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/date-range?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"date-range"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31T23:59:59"
+								}
+							]
+						},
+						"description": "Get claims created within a specific date range"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Claims by Claimant Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/search-by-name?name=John",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"search-by-name"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "John"
+								}
+							]
+						},
+						"description": "Search claims by partial claimant name match"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Claim Count by Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is a number\", function () {",
+									"    var count = pm.response.json();",
+									"    pm.expect(count).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/count?status=SUBMITTED",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"count"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "SUBMITTED"
+								}
+							]
+						},
+						"description": "Get count of claims with a specific status"
+					},
+					"response": []
+				}
+			],
+			"description": "Search and filtering operations for claims"
+		},
+		{
+			"name": "Error Scenarios",
+			"item": [
+				{
+					"name": "Get Non-Existent Claim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error response format\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(404);",
+									"    pm.expect(jsonData.error).to.eql(\"Claim Not Found\");",
+									"    pm.expect(jsonData.message).to.include(\"Claim not found with ID\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/99999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"99999"
+							]
+						},
+						"description": "Test error handling for non-existent claim"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Claim with Invalid Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Validation error response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(400);",
+									"    pm.expect(jsonData.error).to.eql(\"Validation Failed\");",
+									"    pm.expect(jsonData.details.validationErrors).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"policyNumber\": \"\",\n    \"claimantName\": \"\",\n    \"claimantEmail\": \"invalid-email\",\n    \"claimAmount\": -100,\n    \"incidentDate\": \"2025-12-31T23:59:59\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims"
+							]
+						},
+						"description": "Test validation error handling with invalid claim data"
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Status Transition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Invalid state error response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(400);",
+									"    pm.expect(jsonData.error).to.eql(\"Invalid Claim State\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims/1/status?status=PAID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims",
+								"1",
+								"status"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "PAID"
+								}
+							]
+						},
+						"description": "Test invalid status transition (SUBMITTED -> PAID)"
+					},
+					"response": []
+				}
+			],
+			"description": "Test error handling and validation scenarios"
+		},
+		{
+			"name": "Status Workflow Tests",
+			"item": [
+				{
+					"name": "Complete Claim Workflow - Success Path",
+					"item": [
+						{
+							"name": "1. Create Claim",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Claim created successfully\", function () {",
+											"    pm.response.to.have.status(201);",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"SUBMITTED\");",
+											"    pm.globals.set(\"workflowClaimId\", jsonData.id);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"policyNumber\": \"POL-WORKFLOW-TEST\",\n    \"claimantName\": \"Workflow Test User\",\n    \"claimantEmail\": \"workflow.test@email.com\",\n    \"claimantPhone\": \"+1-555-WORKFLOW\",\n    \"description\": \"Complete workflow test claim\",\n    \"claimAmount\": 2500.00,\n    \"incidentDate\": \"2024-01-20T10:00:00\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/claims",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"claims"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2. Move to Under Review",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status updated to UNDER_REVIEW\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"UNDER_REVIEW\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/claims/{{workflowClaimId}}/status?status=UNDER_REVIEW",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"claims",
+										"{{workflowClaimId}}",
+										"status"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "UNDER_REVIEW"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3. Approve Claim",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status updated to APPROVED\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"APPROVED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/claims/{{workflowClaimId}}/status?status=APPROVED",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"claims",
+										"{{workflowClaimId}}",
+										"status"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "APPROVED"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4. Pay Claim",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status updated to PAID\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"PAID\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/claims/{{workflowClaimId}}/status?status=PAID",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"claims",
+										"{{workflowClaimId}}",
+										"status"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "PAID"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Complete successful claim workflow from SUBMITTED to PAID"
+				}
+			],
+			"description": "Test complete claim status workflows"
+		},
+		{
+			"name": "Performance Tests",
+			"item": [
+				{
+					"name": "Bulk Create Claims",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This script would create multiple claims for performance testing",
+									"// In a real scenario, you might use Newman or other tools for load testing"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"policyNumber\": \"POL-PERF-{{$randomInt}}\",\n    \"claimantName\": \"Performance Test {{$randomInt}}\",\n    \"claimantEmail\": \"perf.test.{{$randomInt}}@email.com\",\n    \"claimantPhone\": \"+1-555-{{$randomInt}}\",\n    \"description\": \"Performance test claim {{$randomInt}}\",\n    \"claimAmount\": {{$randomInt}}.00,\n    \"incidentDate\": \"2024-01-20T10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/claims",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"claims"
+							]
+						},
+						"description": "Create claims for performance testing"
+					},
+					"response": []
+				}
+			],
+			"description": "Performance and load testing scenarios"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set base URL if not already set",
+					"if (!pm.globals.has(\"baseUrl\")) {",
+					"    pm.globals.set(\"baseUrl\", \"http://localhost:8080\");",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test to check response time",
+					"pm.test(\"Response time is less than 1000ms\", function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+					"});",
+					"",
+					"// Global test to check content type for successful responses",
+					"if (pm.response.code >= 200 && pm.response.code < 300) {",
+					"    pm.test(\"Content-Type is application/json\", function () {",
+					"        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

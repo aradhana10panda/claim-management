@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClaimManagementServiceApplication.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement</a> &gt; <span class="el_source">ClaimManagementServiceApplication.java</span></div><h1>ClaimManagementServiceApplication.java</h1><pre class="source lang-java linenums">package com.claimmanagement;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * Main Application Class for Claim Management Service
+ * 
+ * @SpringBootApplication is a convenience annotation that combines:
+ * - @Configuration: Marks this class as a source of bean definitions
+ * - @EnableAutoConfiguration: Enables Spring Boot's auto-configuration mechanism
+ * - @ComponentScan: Enables component scanning in the current package and sub-packages
+ * 
+ * This annotation tells Spring Boot to:
+ * 1. Start component scanning from this package
+ * 2. Auto-configure beans based on classpath dependencies
+ * 3. Create an embedded web server (Tomcat by default)
+ * 
+ * @author Claim Management Team
+ * @version 1.0.0
+ * @since 2024-01-01
+ */
+@SpringBootApplication
+<span class="nc" id="L24">public class ClaimManagementServiceApplication {</span>
+
+    /**
+     * Main method - Entry point of the Spring Boot application
+     * 
+     * SpringApplication.run() method:
+     * 1. Creates an ApplicationContext
+     * 2. Registers command line arguments as Spring properties
+     * 3. Loads and refreshes the ApplicationContext
+     * 4. Triggers any CommandLineRunner beans
+     * 
+     * @param args Command line arguments passed to the application
+     */
+    public static void main(String[] args) {
+<span class="nc" id="L38">        SpringApplication.run(ClaimManagementServiceApplication.class, args);</span>
+<span class="nc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

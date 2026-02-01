@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvalidClaimStateException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement.exception</a> &gt; <span class="el_source">InvalidClaimStateException.java</span></div><h1>InvalidClaimStateException.java</h1><pre class="source lang-java linenums">package com.claimmanagement.exception;
+
+import com.claimmanagement.model.entity.ClaimStatus;
+
+/**
+ * Custom exception for invalid claim state operations
+ * 
+ * This exception is thrown when:
+ * 1. Attempting to modify a claim in a terminal state
+ * 2. Invalid status transitions are attempted
+ * 3. Business rules prevent certain operations based on claim state
+ * 4. Workflow violations occur
+ * 
+ * State Management in Business Applications:
+ * - Entities often have states that govern allowed operations
+ * - State transitions must follow business rules
+ * - Invalid state changes can corrupt business processes
+ * - Clear error messages help users understand constraints
+ * 
+ * @author Claim Management Team
+ */
+public class InvalidClaimStateException extends RuntimeException {
+
+    /**
+     * Serial version UID for serialization compatibility
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The current status of the claim when the invalid operation was attempted
+     */
+    private final ClaimStatus currentStatus;
+
+    /**
+     * The attempted new status (if applicable)
+     */
+    private final ClaimStatus attemptedStatus;
+
+    /**
+     * The claim identifier associated with this exception
+     */
+    private final String claimIdentifier;
+
+    /**
+     * Default constructor with message only
+     * 
+     * @param message Descriptive error message
+     */
+    public InvalidClaimStateException(String message) {
+<span class="fc" id="L50">        super(message);</span>
+<span class="fc" id="L51">        this.currentStatus = null;</span>
+<span class="fc" id="L52">        this.attemptedStatus = null;</span>
+<span class="fc" id="L53">        this.claimIdentifier = null;</span>
+<span class="fc" id="L54">    }</span>
+
+    /**
+     * Constructor with message and current status
+     * 
+     * @param message Descriptive error message
+     * @param currentStatus The current status of the claim
+     */
+    public InvalidClaimStateException(String message, ClaimStatus currentStatus) {
+<span class="fc" id="L63">        super(message);</span>
+<span class="fc" id="L64">        this.currentStatus = currentStatus;</span>
+<span class="fc" id="L65">        this.attemptedStatus = null;</span>
+<span class="fc" id="L66">        this.claimIdentifier = null;</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Constructor with message, current status, and attempted status
+     * 
+     * @param message Descriptive error message
+     * @param currentStatus The current status of the claim
+     * @param attemptedStatus The status that was attempted to be set
+     */
+    public InvalidClaimStateException(String message, ClaimStatus currentStatus, ClaimStatus attemptedStatus) {
+<span class="fc" id="L77">        super(message);</span>
+<span class="fc" id="L78">        this.currentStatus = currentStatus;</span>
+<span class="fc" id="L79">        this.attemptedStatus = attemptedStatus;</span>
+<span class="fc" id="L80">        this.claimIdentifier = null;</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * Full constructor with all details
+     * 
+     * @param message Descriptive error message
+     * @param currentStatus The current status of the claim
+     * @param attemptedStatus The status that was attempted to be set
+     * @param claimIdentifier The claim identifier
+     */
+    public InvalidClaimStateException(String message, ClaimStatus currentStatus, 
+                                    ClaimStatus attemptedStatus, String claimIdentifier) {
+<span class="fc" id="L93">        super(message);</span>
+<span class="fc" id="L94">        this.currentStatus = currentStatus;</span>
+<span class="fc" id="L95">        this.attemptedStatus = attemptedStatus;</span>
+<span class="fc" id="L96">        this.claimIdentifier = claimIdentifier;</span>
+<span class="fc" id="L97">    }</span>
+
+    /**
+     * Constructor with message and cause
+     * 
+     * @param message Descriptive error message
+     * @param cause The underlying cause of this exception
+     */
+    public InvalidClaimStateException(String message, Throwable cause) {
+<span class="fc" id="L106">        super(message, cause);</span>
+<span class="fc" id="L107">        this.currentStatus = null;</span>
+<span class="fc" id="L108">        this.attemptedStatus = null;</span>
+<span class="fc" id="L109">        this.claimIdentifier = null;</span>
+<span class="fc" id="L110">    }</span>
+
+    /**
+     * Gets the current status of the claim
+     * 
+     * @return The current claim status, or null if not provided
+     */
+    public ClaimStatus getCurrentStatus() {
+<span class="fc" id="L118">        return currentStatus;</span>
+    }
+
+    /**
+     * Gets the attempted status that caused the exception
+     * 
+     * @return The attempted status, or null if not applicable
+     */
+    public ClaimStatus getAttemptedStatus() {
+<span class="fc" id="L127">        return attemptedStatus;</span>
+    }
+
+    /**
+     * Gets the claim identifier
+     * 
+     * @return The claim identifier, or null if not provided
+     */
+    public String getClaimIdentifier() {
+<span class="fc" id="L136">        return claimIdentifier;</span>
+    }
+
+    /**
+     * Factory method for invalid status transition
+     * 
+     * @param currentStatus The current status of the claim
+     * @param attemptedStatus The status that was attempted
+     * @param claimIdentifier The claim identifier
+     * @return InvalidClaimStateException with standardized message
+     */
+    public static InvalidClaimStateException invalidTransition(ClaimStatus currentStatus, 
+                                                             ClaimStatus attemptedStatus, 
+                                                             String claimIdentifier) {
+<span class="fc" id="L150">        String message = String.format(</span>
+            &quot;Invalid status transition from %s to %s for claim %s&quot;, 
+            currentStatus, attemptedStatus, claimIdentifier
+        );
+<span class="fc" id="L154">        return new InvalidClaimStateException(message, currentStatus, attemptedStatus, claimIdentifier);</span>
+    }
+
+    /**
+     * Factory method for terminal state modification attempt
+     * 
+     * @param currentStatus The terminal status of the claim
+     * @param claimIdentifier The claim identifier
+     * @return InvalidClaimStateException with standardized message
+     */
+    public static InvalidClaimStateException terminalStateModification(ClaimStatus currentStatus, 
+                                                                     String claimIdentifier) {
+<span class="fc" id="L166">        String message = String.format(</span>
+            &quot;Cannot modify claim %s in terminal state: %s&quot;, 
+            claimIdentifier, currentStatus
+        );
+<span class="fc" id="L170">        return new InvalidClaimStateException(message, currentStatus, null, claimIdentifier);</span>
+    }
+
+    /**
+     * Factory method for operation not allowed in current state
+     * 
+     * @param operation The operation that was attempted
+     * @param currentStatus The current status of the claim
+     * @param claimIdentifier The claim identifier
+     * @return InvalidClaimStateException with standardized message
+     */
+    public static InvalidClaimStateException operationNotAllowed(String operation, 
+                                                               ClaimStatus currentStatus, 
+                                                               String claimIdentifier) {
+<span class="fc" id="L184">        String message = String.format(</span>
+            &quot;Operation '%s' not allowed for claim %s in status: %s&quot;, 
+            operation, claimIdentifier, currentStatus
+        );
+<span class="fc" id="L188">        return new InvalidClaimStateException(message, currentStatus, null, claimIdentifier);</span>
+    }
+
+    /**
+     * Checks if this exception represents a status transition error
+     * 
+     * @return true if this is a status transition error
+     */
+    public boolean isStatusTransitionError() {
+<span class="fc bfc" id="L197" title="All 4 branches covered.">        return currentStatus != null &amp;&amp; attemptedStatus != null;</span>
+    }
+
+    /**
+     * Checks if this exception represents a terminal state error
+     * 
+     * @return true if this is a terminal state error
+     */
+    public boolean isTerminalStateError() {
+<span class="fc bfc" id="L206" title="All 4 branches covered.">        return currentStatus != null &amp;&amp; currentStatus.isTerminal();</span>
+    }
+
+    /**
+     * Gets a detailed error description including status information
+     * 
+     * @return Detailed error description
+     */
+    public String getDetailedMessage() {
+<span class="fc" id="L215">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L216">        sb.append(getMessage());</span>
+        
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        if (claimIdentifier != null) {</span>
+<span class="fc" id="L219">            sb.append(&quot; [Claim: &quot;).append(claimIdentifier).append(&quot;]&quot;);</span>
+        }
+        
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (currentStatus != null) {</span>
+<span class="fc" id="L223">            sb.append(&quot; [Current Status: &quot;).append(currentStatus).append(&quot;]&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (attemptedStatus != null) {</span>
+<span class="fc" id="L227">            sb.append(&quot; [Attempted Status: &quot;).append(attemptedStatus).append(&quot;]&quot;);</span>
+        }
+        
+<span class="fc" id="L230">        return sb.toString();</span>
+    }
+
+    /**
+     * Override toString to provide comprehensive information
+     * 
+     * @return String representation of the exception
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L240">        return getClass().getSimpleName() + &quot;: &quot; + getDetailedMessage();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

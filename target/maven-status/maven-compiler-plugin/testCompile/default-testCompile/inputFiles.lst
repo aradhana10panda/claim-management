@@ -1,0 +1,10 @@
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\service\ClaimServiceTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\exception\GlobalExceptionHandlerTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\exception\InvalidClaimStateExceptionTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\model\entity\ClaimStatusTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\repository\ClaimRepositoryTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\model\entity\ClaimTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\ClaimManagementServiceApplicationTests.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\exception\ClaimNotFoundExceptionTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\mapper\ClaimMapperTest.java
+C:\Users\ARADHANA PANDA\claim-management\src\test\java\com\claimmanagement\controller\ClaimControllerIntegrationTest.java

@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClaimServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement.service.impl</a> &gt; <span class="el_source">ClaimServiceImpl.java</span></div><h1>ClaimServiceImpl.java</h1><pre class="source lang-java linenums">package com.claimmanagement.service.impl;
+
+import com.claimmanagement.exception.ClaimNotFoundException;
+import com.claimmanagement.exception.InvalidClaimStateException;
+import com.claimmanagement.mapper.ClaimMapper;
+import com.claimmanagement.model.dto.ClaimRequestDto;
+import com.claimmanagement.model.dto.ClaimResponseDto;
+import com.claimmanagement.model.entity.Claim;
+import com.claimmanagement.model.entity.ClaimStatus;
+import com.claimmanagement.repository.ClaimRepository;
+import com.claimmanagement.service.ClaimService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ * Implementation of ClaimService interface
+ * 
+ * Service Implementation Best Practices:
+ * 1. Transaction Management: Use @Transactional for data consistency
+ * 2. Exception Handling: Convert technical exceptions to business exceptions
+ * 3. Logging: Log important business events and errors
+ * 4. Validation: Implement business rule validation
+ * 5. Performance: Optimize database queries and caching
+ * 
+ * Spring Annotations:
+ * @Service - Marks this as a Spring service component
+ * @Transactional - Manages database transactions automatically
+ * @Autowired - Dependency injection (constructor injection preferred)
+ * 
+ * Transaction Management:
+ * - @Transactional ensures ACID properties
+ * - Rollback on RuntimeException by default
+ * - Can specify isolation levels and propagation behavior
+ * - readOnly = true optimizes read-only operations
+ * 
+ * @author Claim Management Team
+ */
+@Service
+@Transactional  // All methods run in transactions by default
+public class ClaimServiceImpl implements ClaimService {
+
+    /**
+     * Logger for this class
+     * SLF4J (Simple Logging Facade for Java) provides:
+     * - Abstraction over logging frameworks
+     * - Parameterized logging for performance
+     * - Level-based logging (TRACE, DEBUG, INFO, WARN, ERROR)
+     */
+<span class="fc" id="L60">    private static final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);</span>
+
+    /**
+     * Repository for database operations
+     * Final field ensures immutability after construction
+     */
+    private final ClaimRepository claimRepository;
+
+    /**
+     * Mapper for entity-DTO conversions
+     * MapStruct generates the implementation
+     */
+    private final ClaimMapper claimMapper;
+
+    /**
+     * Constructor-based dependency injection (recommended over field injection)
+     * 
+     * Benefits of constructor injection:
+     * 1. Immutable dependencies (final fields)
+     * 2. Fail-fast if dependencies are missing
+     * 3. Easy to test (no reflection needed)
+     * 4. Clear dependencies in constructor signature
+     * 
+     * @param claimRepository Repository for claim data access
+     * @param claimMapper Mapper for entity-DTO conversions
+     */
+    @Autowired
+<span class="fc" id="L87">    public ClaimServiceImpl(ClaimRepository claimRepository, ClaimMapper claimMapper) {</span>
+<span class="fc" id="L88">        this.claimRepository = claimRepository;</span>
+<span class="fc" id="L89">        this.claimMapper = claimMapper;</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Creates a new claim with business logic validation
+     * 
+     * Transaction behavior: Creates new transaction if none exists
+     * Rollback: Automatic on any RuntimeException
+     */
+    @Override
+    @Transactional
+    public ClaimResponseDto createClaim(ClaimRequestDto requestDto) {
+<span class="fc" id="L101">        logger.info(&quot;Creating new claim for policy: {}&quot;, requestDto.getPolicyNumber());</span>
+
+        try {
+            // Convert DTO to entity using MapStruct
+<span class="fc" id="L105">            Claim claim = claimMapper.toEntity(requestDto);</span>
+
+            // Generate unique claim number
+<span class="fc" id="L108">            String claimNumber = generateClaimNumber();</span>
+<span class="fc" id="L109">            claim.setClaimNumber(claimNumber);</span>
+
+            // Set default status if not provided
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">            if (claim.getStatus() == null) {</span>
+<span class="nc" id="L113">                claim.setStatus(ClaimStatus.SUBMITTED);</span>
+            }
+
+            // Validate business rules
+<span class="fc" id="L117">            validateClaimCreation(claim);</span>
+
+            // Save to database
+<span class="fc" id="L120">            Claim savedClaim = claimRepository.save(claim);</span>
+
+<span class="fc" id="L122">            logger.info(&quot;Successfully created claim with number: {}&quot;, savedClaim.getClaimNumber());</span>
+
+            // Convert entity back to DTO for response
+<span class="fc" id="L125">            return claimMapper.toResponseDto(savedClaim);</span>
+
+<span class="fc" id="L127">        } catch (Exception e) {</span>
+<span class="fc" id="L128">            logger.error(&quot;Error creating claim for policy: {}&quot;, requestDto.getPolicyNumber(), e);</span>
+<span class="fc" id="L129">            throw new RuntimeException(&quot;Failed to create claim: &quot; + e.getMessage(), e);</span>
+        }
+    }
+
+    /**
+     * Retrieves claim by ID with error handling
+     * 
+     * @Transactional(readOnly = true) optimizes for read operations:
+     * - No dirty checking for entities
+     * - Database can optimize for read-only queries
+     * - Prevents accidental modifications
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ClaimResponseDto getClaimById(Long id) {
+<span class="fc" id="L144">        logger.debug(&quot;Retrieving claim by ID: {}&quot;, id);</span>
+
+<span class="fc" id="L146">        Claim claim = claimRepository.findById(id)</span>
+<span class="fc" id="L147">                .orElseThrow(() -&gt; new ClaimNotFoundException(&quot;Claim not found with ID: &quot; + id));</span>
+
+<span class="fc" id="L149">        return claimMapper.toResponseDto(claim);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ClaimResponseDto getClaimByNumber(String claimNumber) {
+<span class="nc" id="L155">        logger.debug(&quot;Retrieving claim by number: {}&quot;, claimNumber);</span>
+
+<span class="nc" id="L157">        Claim claim = claimRepository.findByClaimNumber(claimNumber)</span>
+<span class="nc" id="L158">                .orElseThrow(() -&gt; new ClaimNotFoundException(&quot;Claim not found with number: &quot; + claimNumber));</span>
+
+<span class="nc" id="L160">        return claimMapper.toResponseDto(claim);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;ClaimResponseDto&gt; getAllClaims(Pageable pageable) {
+<span class="fc" id="L166">        logger.debug(&quot;Retrieving all claims with pagination: page={}, size={}&quot;, </span>
+<span class="fc" id="L167">                    pageable.getPageNumber(), pageable.getPageSize());</span>
+
+<span class="fc" id="L169">        Page&lt;Claim&gt; claimsPage = claimRepository.findAll(pageable);</span>
+        
+        // Convert Page&lt;Claim&gt; to Page&lt;ClaimResponseDto&gt;
+<span class="fc" id="L172">        return claimsPage.map(claimMapper::toResponseDto);</span>
+    }
+
+    /**
+     * Updates existing claim with business rule validation
+     */
+    @Override
+    @Transactional
+    public ClaimResponseDto updateClaim(Long id, ClaimRequestDto requestDto) {
+<span class="fc" id="L181">        logger.info(&quot;Updating claim with ID: {}&quot;, id);</span>
+
+        // Retrieve existing claim
+<span class="fc" id="L184">        Claim existingClaim = claimRepository.findById(id)</span>
+<span class="pc" id="L185">                .orElseThrow(() -&gt; new ClaimNotFoundException(&quot;Claim not found with ID: &quot; + id));</span>
+
+        // Check if claim can be modified
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        if (existingClaim.getStatus().isTerminal()) {</span>
+<span class="fc" id="L189">            throw new InvalidClaimStateException(</span>
+<span class="fc" id="L190">                &quot;Cannot modify claim in terminal state: &quot; + existingClaim.getStatus());</span>
+        }
+
+        // Validate status transition if status is being changed
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        if (requestDto.getStatus() != null &amp;&amp; </span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            !existingClaim.getStatus().canTransitionTo(requestDto.getStatus())) {</span>
+<span class="nc" id="L196">            throw new InvalidClaimStateException(</span>
+<span class="nc" id="L197">                String.format(&quot;Invalid status transition from %s to %s&quot;, </span>
+<span class="nc" id="L198">                            existingClaim.getStatus(), requestDto.getStatus()));</span>
+        }
+
+        // Update entity with new data using MapStruct
+<span class="fc" id="L202">        claimMapper.updateEntityFromDto(requestDto, existingClaim);</span>
+
+        // Validate updated claim
+<span class="fc" id="L205">        validateClaimUpdate(existingClaim);</span>
+
+        // Save updated claim
+<span class="fc" id="L208">        Claim updatedClaim = claimRepository.save(existingClaim);</span>
+
+<span class="fc" id="L210">        logger.info(&quot;Successfully updated claim: {}&quot;, updatedClaim.getClaimNumber());</span>
+
+<span class="fc" id="L212">        return claimMapper.toResponseDto(updatedClaim);</span>
+    }
+
+    @Override
+    @Transactional
+    public ClaimResponseDto updateClaimStatus(Long id, ClaimStatus newStatus) {
+<span class="fc" id="L218">        logger.info(&quot;Updating claim status for ID: {} to {}&quot;, id, newStatus);</span>
+
+<span class="fc" id="L220">        Claim claim = claimRepository.findById(id)</span>
+<span class="pc" id="L221">                .orElseThrow(() -&gt; new ClaimNotFoundException(&quot;Claim not found with ID: &quot; + id));</span>
+
+        // Validate status transition
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (!claim.getStatus().canTransitionTo(newStatus)) {</span>
+<span class="fc" id="L225">            throw new InvalidClaimStateException(</span>
+<span class="fc" id="L226">                String.format(&quot;Invalid status transition from %s to %s&quot;, </span>
+<span class="fc" id="L227">                            claim.getStatus(), newStatus));</span>
+        }
+
+<span class="fc" id="L230">        claim.setStatus(newStatus);</span>
+<span class="fc" id="L231">        Claim updatedClaim = claimRepository.save(claim);</span>
+
+<span class="fc" id="L233">        logger.info(&quot;Successfully updated claim status: {} -&gt; {}&quot;, </span>
+<span class="fc" id="L234">                   claim.getClaimNumber(), newStatus);</span>
+
+<span class="fc" id="L236">        return claimMapper.toResponseDto(updatedClaim);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteClaim(Long id) {
+<span class="fc" id="L242">        logger.info(&quot;Deleting claim with ID: {}&quot;, id);</span>
+
+<span class="fc" id="L244">        Claim claim = claimRepository.findById(id)</span>
+<span class="pc" id="L245">                .orElseThrow(() -&gt; new ClaimNotFoundException(&quot;Claim not found with ID: &quot; + id));</span>
+
+        // Business rule: Only allow deletion of claims in SUBMITTED status
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        if (claim.getStatus() != ClaimStatus.SUBMITTED) {</span>
+<span class="fc" id="L249">            throw new InvalidClaimStateException(</span>
+<span class="fc" id="L250">                &quot;Cannot delete claim in status: &quot; + claim.getStatus());</span>
+        }
+
+<span class="fc" id="L253">        claimRepository.delete(claim);</span>
+<span class="fc" id="L254">        logger.info(&quot;Successfully deleted claim: {}&quot;, claim.getClaimNumber());</span>
+<span class="fc" id="L255">    }</span>
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;ClaimResponseDto&gt; searchClaims(String policyNumber, ClaimStatus status, 
+                                              String claimantEmail, Pageable pageable) {
+<span class="fc" id="L261">        logger.debug(&quot;Searching claims with criteria - policy: {}, status: {}, email: {}&quot;, </span>
+                    policyNumber, status, claimantEmail);
+
+<span class="fc" id="L264">        Page&lt;Claim&gt; claimsPage = claimRepository.findByOptionalCriteria(</span>
+            policyNumber, status, claimantEmail, pageable);
+
+<span class="fc" id="L267">        return claimsPage.map(claimMapper::toResponseDto);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ClaimResponseDto&gt; getClaimsByPolicyNumber(String policyNumber) {
+<span class="nc" id="L273">        logger.debug(&quot;Retrieving claims for policy: {}&quot;, policyNumber);</span>
+
+<span class="nc" id="L275">        List&lt;Claim&gt; claims = claimRepository.findByPolicyNumber(policyNumber);</span>
+<span class="nc" id="L276">        return claimMapper.toResponseDtoList(claims);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ClaimResponseDto&gt; getClaimsByClaimantEmail(String claimantEmail) {
+<span class="nc" id="L282">        logger.debug(&quot;Retrieving claims for claimant: {}&quot;, claimantEmail);</span>
+
+<span class="nc" id="L284">        List&lt;Claim&gt; claims = claimRepository.findByClaimantEmail(claimantEmail);</span>
+<span class="nc" id="L285">        return claimMapper.toResponseDtoList(claims);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;ClaimResponseDto&gt; getClaimsByStatus(ClaimStatus status, Pageable pageable) {
+<span class="nc" id="L291">        logger.debug(&quot;Retrieving claims with status: {}&quot;, status);</span>
+
+<span class="nc" id="L293">        Page&lt;Claim&gt; claimsPage = claimRepository.findByStatus(status, pageable);</span>
+<span class="nc" id="L294">        return claimsPage.map(claimMapper::toResponseDto);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ClaimResponseDto&gt; getHighValueClaims(BigDecimal minimumAmount) {
+<span class="nc" id="L300">        logger.debug(&quot;Retrieving high-value claims above: {}&quot;, minimumAmount);</span>
+
+<span class="nc" id="L302">        List&lt;Claim&gt; claims = claimRepository.findByClaimAmountGreaterThan(minimumAmount);</span>
+<span class="nc" id="L303">        return claimMapper.toResponseDtoList(claims);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ClaimResponseDto&gt; getClaimsCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+<span class="nc" id="L309">        logger.debug(&quot;Retrieving claims created between {} and {}&quot;, startDate, endDate);</span>
+
+<span class="nc" id="L311">        List&lt;Claim&gt; claims = claimRepository.findByCreatedAtBetween(startDate, endDate);</span>
+<span class="nc" id="L312">        return claimMapper.toResponseDtoList(claims);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ClaimResponseDto&gt; searchClaimsByClaimantName(String claimantName) {
+<span class="nc" id="L318">        logger.debug(&quot;Searching claims by claimant name: {}&quot;, claimantName);</span>
+
+<span class="nc" id="L320">        List&lt;Claim&gt; claims = claimRepository.findByClaimantNameContainingIgnoreCase(claimantName);</span>
+<span class="nc" id="L321">        return claimMapper.toResponseDtoList(claims);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long getClaimCountByStatus(ClaimStatus status) {
+<span class="nc" id="L327">        return claimRepository.countByStatus(status);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByClaimNumber(String claimNumber) {
+<span class="fc" id="L333">        return claimRepository.existsByClaimNumber(claimNumber);</span>
+    }
+
+    /**
+     * Generates unique claim number with retry logic
+     * 
+     * Format: CLM-YYYY-NNNNNN
+     * - CLM: Prefix for claim
+     * - YYYY: Current year
+     * - NNNNNN: 6-digit sequential number
+     * 
+     * Collision handling: Retry with different random number if collision occurs
+     */
+    @Override
+    public String generateClaimNumber() {
+<span class="fc" id="L348">        int currentYear = Year.now().getValue();</span>
+<span class="fc" id="L349">        int maxRetries = 10;</span>
+        
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">        for (int attempt = 0; attempt &lt; maxRetries; attempt++) {</span>
+            // Generate random 6-digit number
+<span class="fc" id="L353">            int randomNumber = ThreadLocalRandom.current().nextInt(100000, 999999);</span>
+<span class="fc" id="L354">            String claimNumber = String.format(&quot;CLM-%d-%06d&quot;, currentYear, randomNumber);</span>
+            
+            // Check if this number already exists
+<span class="fc bfc" id="L357" title="All 2 branches covered.">            if (!existsByClaimNumber(claimNumber)) {</span>
+<span class="fc" id="L358">                logger.debug(&quot;Generated unique claim number: {}&quot;, claimNumber);</span>
+<span class="fc" id="L359">                return claimNumber;</span>
+            }
+            
+<span class="fc" id="L362">            logger.debug(&quot;Claim number collision detected: {}, retrying...&quot;, claimNumber);</span>
+        }
+        
+<span class="nc" id="L365">        throw new RuntimeException(&quot;Failed to generate unique claim number after &quot; + maxRetries + &quot; attempts&quot;);</span>
+    }
+
+    /**
+     * Validates business rules for claim creation
+     * 
+     * @param claim The claim to validate
+     * @throws IllegalArgumentException if validation fails
+     */
+    private void validateClaimCreation(Claim claim) {
+        // Business Rule: Claim amount must be positive
+<span class="fc bfc" id="L376" title="All 2 branches covered.">        if (claim.getClaimAmount().compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="fc" id="L377">            throw new IllegalArgumentException(&quot;Claim amount must be greater than zero&quot;);</span>
+        }
+
+        // Business Rule: Incident date cannot be in the future
+<span class="pc bpc" id="L381" title="1 of 2 branches missed.">        if (claim.getIncidentDate().isAfter(LocalDateTime.now())) {</span>
+<span class="nc" id="L382">            throw new IllegalArgumentException(&quot;Incident date cannot be in the future&quot;);</span>
+        }
+
+        // Business Rule: Incident date cannot be more than 2 years old
+<span class="fc" id="L386">        LocalDateTime twoYearsAgo = LocalDateTime.now().minusYears(2);</span>
+<span class="pc bpc" id="L387" title="1 of 2 branches missed.">        if (claim.getIncidentDate().isBefore(twoYearsAgo)) {</span>
+<span class="nc" id="L388">            throw new IllegalArgumentException(&quot;Incident date cannot be more than 2 years old&quot;);</span>
+        }
+
+<span class="fc" id="L391">        logger.debug(&quot;Claim creation validation passed for: {}&quot;, claim.getClaimNumber());</span>
+<span class="fc" id="L392">    }</span>
+
+    /**
+     * Validates business rules for claim updates
+     * 
+     * @param claim The claim to validate
+     * @throws IllegalArgumentException if validation fails
+     */
+    private void validateClaimUpdate(Claim claim) {
+        // Reuse creation validation rules
+<span class="fc" id="L402">        validateClaimCreation(claim);</span>
+
+        // Additional update-specific validations can be added here
+<span class="fc" id="L405">        logger.debug(&quot;Claim update validation passed for: {}&quot;, claim.getClaimNumber());</span>
+<span class="fc" id="L406">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

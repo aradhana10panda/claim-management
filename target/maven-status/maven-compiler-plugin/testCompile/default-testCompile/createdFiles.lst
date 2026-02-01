@@ -1,0 +1,8 @@
+com\claimmanagement\mapper\ClaimMapperTest.class
+com\claimmanagement\model\entity\ClaimStatusTest.class
+com\claimmanagement\ClaimManagementServiceApplicationTests.class
+com\claimmanagement\exception\ClaimNotFoundExceptionTest.class
+com\claimmanagement\repository\ClaimRepositoryTest.class
+com\claimmanagement\service\ClaimServiceTest.class
+com\claimmanagement\exception\InvalidClaimStateExceptionTest.class
+com\claimmanagement\model\entity\ClaimTest.class

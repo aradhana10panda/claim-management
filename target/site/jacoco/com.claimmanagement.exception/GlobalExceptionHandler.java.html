@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">claim-management-service</a> &gt; <a href="index.source.html" class="el_package">com.claimmanagement.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.claimmanagement.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Global Exception Handler for the Claim Management Service
+ * 
+ * @RestControllerAdvice combines @ControllerAdvice and @ResponseBody:
+ * - @ControllerAdvice: Makes this class handle exceptions globally across all controllers
+ * - @ResponseBody: Automatically serializes return values to JSON
+ * 
+ * Benefits of Global Exception Handling:
+ * 1. Centralized Error Handling: All exceptions handled in one place
+ * 2. Consistent Error Response Format: Standardized error structure
+ * 3. Separation of Concerns: Controllers focus on business logic, not error handling
+ * 4. Reduced Code Duplication: No need to handle exceptions in each controller
+ * 5. Better Logging: Centralized logging of all exceptions
+ * 6. Client-Friendly Responses: Convert technical exceptions to user-friendly messages
+ * 
+ * Exception Handling Strategy:
+ * - Business exceptions (404, 400) return appropriate HTTP status codes
+ * - Technical exceptions (500) are logged and return generic error messages
+ * - Validation errors are formatted as field-specific error maps
+ * - All responses include timestamp and request path for debugging
+ * 
+ * @author Claim Management Team
+ */
+@RestControllerAdvice
+<span class="nc" id="L41">public class GlobalExceptionHandler {</span>
+
+    /**
+     * Logger for exception handling
+     */
+<span class="nc" id="L46">    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
+
+    /**
+     * Handles ClaimNotFoundException
+     * 
+     * @ExceptionHandler specifies which exception types this method handles
+     * Returns HTTP 404 (Not Found) for business logic &quot;not found&quot; scenarios
+     * 
+     * @param ex The ClaimNotFoundException that was thrown
+     * @param request The web request context
+     * @return ResponseEntity with error details and 404 status
+     */
+    @ExceptionHandler(ClaimNotFoundException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleClaimNotFoundException(
+            ClaimNotFoundException ex, WebRequest request) {
+        
+<span class="nc" id="L62">        logger.warn(&quot;Claim not found: {}&quot;, ex.getMessage());</span>
+        
+<span class="nc" id="L64">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L65">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L66">                .status(HttpStatus.NOT_FOUND.value())</span>
+<span class="nc" id="L67">                .error(&quot;Claim Not Found&quot;)</span>
+<span class="nc" id="L68">                .message(ex.getMessage())</span>
+<span class="nc" id="L69">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L70">                .build();</span>
+        
+        // Add claim identifier if available
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (ex.getClaimIdentifier() != null) {</span>
+<span class="nc" id="L74">            errorResponse.addDetail(&quot;claimIdentifier&quot;, ex.getClaimIdentifier());</span>
+        }
+        
+<span class="nc" id="L77">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.NOT_FOUND);</span>
+    }
+
+    /**
+     * Handles InvalidClaimStateException
+     * 
+     * Returns HTTP 400 (Bad Request) for invalid business operations
+     * 
+     * @param ex The InvalidClaimStateException that was thrown
+     * @param request The web request context
+     * @return ResponseEntity with error details and 400 status
+     */
+    @ExceptionHandler(InvalidClaimStateException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleInvalidClaimStateException(
+            InvalidClaimStateException ex, WebRequest request) {
+        
+<span class="nc" id="L93">        logger.warn(&quot;Invalid claim state operation: {}&quot;, ex.getMessage());</span>
+        
+<span class="nc" id="L95">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L96">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L97">                .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="nc" id="L98">                .error(&quot;Invalid Claim State&quot;)</span>
+<span class="nc" id="L99">                .message(ex.getMessage())</span>
+<span class="nc" id="L100">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L101">                .build();</span>
+        
+        // Add status information if available
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (ex.getCurrentStatus() != null) {</span>
+<span class="nc" id="L105">            errorResponse.addDetail(&quot;currentStatus&quot;, ex.getCurrentStatus().toString());</span>
+        }
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (ex.getAttemptedStatus() != null) {</span>
+<span class="nc" id="L108">            errorResponse.addDetail(&quot;attemptedStatus&quot;, ex.getAttemptedStatus().toString());</span>
+        }
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (ex.getClaimIdentifier() != null) {</span>
+<span class="nc" id="L111">            errorResponse.addDetail(&quot;claimIdentifier&quot;, ex.getClaimIdentifier());</span>
+        }
+        
+<span class="nc" id="L114">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+    }
+
+    /**
+     * Handles Bean Validation Errors
+     * 
+     * MethodArgumentNotValidException is thrown when @Valid annotation fails
+     * This occurs when request DTOs don't pass validation constraints
+     * 
+     * Returns HTTP 400 (Bad Request) with detailed field-level validation errors
+     * 
+     * @param ex The MethodArgumentNotValidException containing validation errors
+     * @param request The web request context
+     * @return ResponseEntity with validation error details and 400 status
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleValidationExceptions(
+            MethodArgumentNotValidException ex, WebRequest request) {
+        
+<span class="nc" id="L133">        logger.warn(&quot;Validation failed: {} validation errors&quot;, ex.getBindingResult().getErrorCount());</span>
+        
+        // Extract field-level validation errors
+<span class="nc" id="L136">        Map&lt;String, String&gt; validationErrors = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L137">        ex.getBindingResult().getAllErrors().forEach((error) -&gt; {</span>
+<span class="nc" id="L138">            String fieldName = ((FieldError) error).getField();</span>
+<span class="nc" id="L139">            String errorMessage = error.getDefaultMessage();</span>
+<span class="nc" id="L140">            validationErrors.put(fieldName, errorMessage);</span>
+<span class="nc" id="L141">        });</span>
+        
+<span class="nc" id="L143">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L144">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L145">                .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="nc" id="L146">                .error(&quot;Validation Failed&quot;)</span>
+<span class="nc" id="L147">                .message(&quot;Request validation failed&quot;)</span>
+<span class="nc" id="L148">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L149">                .build();</span>
+        
+        // Add validation errors as details
+<span class="nc" id="L152">        errorResponse.addDetail(&quot;validationErrors&quot;, validationErrors);</span>
+        
+<span class="nc" id="L154">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+    }
+
+    /**
+     * Handles IllegalArgumentException
+     * 
+     * Often thrown by business logic for invalid input parameters
+     * Returns HTTP 400 (Bad Request)
+     * 
+     * @param ex The IllegalArgumentException that was thrown
+     * @param request The web request context
+     * @return ResponseEntity with error details and 400 status
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleIllegalArgumentException(
+            IllegalArgumentException ex, WebRequest request) {
+        
+<span class="nc" id="L171">        logger.warn(&quot;Illegal argument: {}&quot;, ex.getMessage());</span>
+        
+<span class="nc" id="L173">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L174">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L175">                .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="nc" id="L176">                .error(&quot;Invalid Request&quot;)</span>
+<span class="nc" id="L177">                .message(ex.getMessage())</span>
+<span class="nc" id="L178">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L179">                .build();</span>
+        
+<span class="nc" id="L181">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+    }
+
+    /**
+     * Handles IllegalStateException
+     * 
+     * Thrown when an operation is called at an inappropriate time
+     * Returns HTTP 409 (Conflict)
+     * 
+     * @param ex The IllegalStateException that was thrown
+     * @param request The web request context
+     * @return ResponseEntity with error details and 409 status
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleIllegalStateException(
+            IllegalStateException ex, WebRequest request) {
+        
+<span class="nc" id="L198">        logger.warn(&quot;Illegal state: {}&quot;, ex.getMessage());</span>
+        
+<span class="nc" id="L200">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L201">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L202">                .status(HttpStatus.CONFLICT.value())</span>
+<span class="nc" id="L203">                .error(&quot;Conflict&quot;)</span>
+<span class="nc" id="L204">                .message(ex.getMessage())</span>
+<span class="nc" id="L205">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L206">                .build();</span>
+        
+<span class="nc" id="L208">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.CONFLICT);</span>
+    }
+
+    /**
+     * Handles all other RuntimeExceptions
+     * 
+     * Catch-all handler for unexpected runtime exceptions
+     * Returns HTTP 500 (Internal Server Error)
+     * Logs full stack trace for debugging
+     * 
+     * @param ex The RuntimeException that was thrown
+     * @param request The web request context
+     * @return ResponseEntity with generic error message and 500 status
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleRuntimeException(
+            RuntimeException ex, WebRequest request) {
+        
+<span class="nc" id="L226">        logger.error(&quot;Unexpected runtime exception&quot;, ex);</span>
+        
+<span class="nc" id="L228">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L229">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L230">                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
+<span class="nc" id="L231">                .error(&quot;Internal Server Error&quot;)</span>
+<span class="nc" id="L232">                .message(&quot;An unexpected error occurred. Please try again later.&quot;)</span>
+<span class="nc" id="L233">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L234">                .build();</span>
+        
+        // In development, include exception details
+        // In production, this should be removed for security
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (isDevelopmentMode()) {</span>
+<span class="nc" id="L239">            errorResponse.addDetail(&quot;exceptionType&quot;, ex.getClass().getSimpleName());</span>
+<span class="nc" id="L240">            errorResponse.addDetail(&quot;exceptionMessage&quot;, ex.getMessage());</span>
+        }
+        
+<span class="nc" id="L243">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+    }
+
+    /**
+     * Handles all other Exceptions (checked exceptions)
+     * 
+     * Final catch-all handler for any exceptions not handled above
+     * Returns HTTP 500 (Internal Server Error)
+     * 
+     * @param ex The Exception that was thrown
+     * @param request The web request context
+     * @return ResponseEntity with generic error message and 500 status
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleGenericException(
+            Exception ex, WebRequest request) {
+        
+<span class="nc" id="L260">        logger.error(&quot;Unexpected exception&quot;, ex);</span>
+        
+<span class="nc" id="L262">        ErrorResponse errorResponse = ErrorResponse.builder()</span>
+<span class="nc" id="L263">                .timestamp(LocalDateTime.now())</span>
+<span class="nc" id="L264">                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
+<span class="nc" id="L265">                .error(&quot;Internal Server Error&quot;)</span>
+<span class="nc" id="L266">                .message(&quot;An unexpected error occurred. Please contact support.&quot;)</span>
+<span class="nc" id="L267">                .path(request.getDescription(false).replace(&quot;uri=&quot;, &quot;&quot;))</span>
+<span class="nc" id="L268">                .build();</span>
+        
+<span class="nc" id="L270">        return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+    }
+
+    /**
+     * Checks if the application is running in development mode
+     * 
+     * In a real application, this would check Spring profiles or environment variables
+     * 
+     * @return true if in development mode
+     */
+    private boolean isDevelopmentMode() {
+        // Simple check - in real applications, use Spring profiles
+<span class="nc" id="L282">        return true; // Set to false in production</span>
+    }
+
+    /**
+     * Error Response DTO for consistent error format
+     * 
+     * Provides a standardized structure for all error responses
+     * Includes common fields and allows for additional details
+     */
+    public static class ErrorResponse {
+        private LocalDateTime timestamp;
+        private int status;
+        private String error;
+        private String message;
+        private String path;
+        private Map&lt;String, Object&gt; details;
+
+        // Builder pattern for easy construction
+        public static ErrorResponseBuilder builder() {
+<span class="nc" id="L301">            return new ErrorResponseBuilder();</span>
+        }
+
+        // Constructors
+<span class="nc" id="L305">        public ErrorResponse() {</span>
+<span class="nc" id="L306">            this.details = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L307">        }</span>
+
+<span class="nc" id="L309">        public ErrorResponse(LocalDateTime timestamp, int status, String error, String message, String path) {</span>
+<span class="nc" id="L310">            this.timestamp = timestamp;</span>
+<span class="nc" id="L311">            this.status = status;</span>
+<span class="nc" id="L312">            this.error = error;</span>
+<span class="nc" id="L313">            this.message = message;</span>
+<span class="nc" id="L314">            this.path = path;</span>
+<span class="nc" id="L315">            this.details = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L316">        }</span>
+
+        // Method to add additional details
+        public void addDetail(String key, Object value) {
+<span class="nc bnc" id="L320" title="All 2 branches missed.">            if (details == null) {</span>
+<span class="nc" id="L321">                details = new HashMap&lt;&gt;();</span>
+            }
+<span class="nc" id="L323">            details.put(key, value);</span>
+<span class="nc" id="L324">        }</span>
+
+        // Getters and Setters
+<span class="nc" id="L327">        public LocalDateTime getTimestamp() { return timestamp; }</span>
+<span class="nc" id="L328">        public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }</span>
+
+<span class="nc" id="L330">        public int getStatus() { return status; }</span>
+<span class="nc" id="L331">        public void setStatus(int status) { this.status = status; }</span>
+
+<span class="nc" id="L333">        public String getError() { return error; }</span>
+<span class="nc" id="L334">        public void setError(String error) { this.error = error; }</span>
+
+<span class="nc" id="L336">        public String getMessage() { return message; }</span>
+<span class="nc" id="L337">        public void setMessage(String message) { this.message = message; }</span>
+
+<span class="nc" id="L339">        public String getPath() { return path; }</span>
+<span class="nc" id="L340">        public void setPath(String path) { this.path = path; }</span>
+
+<span class="nc" id="L342">        public Map&lt;String, Object&gt; getDetails() { return details; }</span>
+<span class="nc" id="L343">        public void setDetails(Map&lt;String, Object&gt; details) { this.details = details; }</span>
+
+        // Builder class
+<span class="nc" id="L346">        public static class ErrorResponseBuilder {</span>
+            private LocalDateTime timestamp;
+            private int status;
+            private String error;
+            private String message;
+            private String path;
+
+            public ErrorResponseBuilder timestamp(LocalDateTime timestamp) {
+<span class="nc" id="L354">                this.timestamp = timestamp;</span>
+<span class="nc" id="L355">                return this;</span>
+            }
+
+            public ErrorResponseBuilder status(int status) {
+<span class="nc" id="L359">                this.status = status;</span>
+<span class="nc" id="L360">                return this;</span>
+            }
+
+            public ErrorResponseBuilder error(String error) {
+<span class="nc" id="L364">                this.error = error;</span>
+<span class="nc" id="L365">                return this;</span>
+            }
+
+            public ErrorResponseBuilder message(String message) {
+<span class="nc" id="L369">                this.message = message;</span>
+<span class="nc" id="L370">                return this;</span>
+            }
+
+            public ErrorResponseBuilder path(String path) {
+<span class="nc" id="L374">                this.path = path;</span>
+<span class="nc" id="L375">                return this;</span>
+            }
+
+            public ErrorResponse build() {
+<span class="nc" id="L379">                return new ErrorResponse(timestamp, status, error, message, path);</span>
+            }
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

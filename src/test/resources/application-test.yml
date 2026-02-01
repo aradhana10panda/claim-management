@@ -1,0 +1,61 @@
+# Test Configuration for Claim Management Service
+# This configuration is used during testing to provide isolated test environment
+
+# Server Configuration (not needed for most tests)
+server:
+  port: 0  # Random port for integration tests
+
+# Spring Configuration
+spring:
+  application:
+    name: claim-management-service-test
+  
+  # Test Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+    
+  # H2 Console (disabled in tests)
+  h2:
+    console:
+      enabled: false
+      
+  # JPA Configuration for Tests
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # Recreate schema for each test
+    show-sql: false  # Disable SQL logging in tests for cleaner output
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        
+# Logging Configuration for Tests
+logging:
+  level:
+    com.claimmanagement: INFO  # Reduce log noise in tests
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    
+# Management/Actuator Configuration (minimal for tests)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      
+# API Documentation (disabled in tests)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

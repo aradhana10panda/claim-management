@@ -1,0 +1,16 @@
+com\claimmanagement\exception\ClaimNotFoundException.class
+com\claimmanagement\model\dto\ClaimRequestDto.class
+com\claimmanagement\model\entity\Claim.class
+com\claimmanagement\model\dto\ClaimResponseDto.class
+com\claimmanagement\repository\ClaimRepository.class
+com\claimmanagement\service\impl\ClaimServiceImpl.class
+com\claimmanagement\mapper\ClaimMapperImpl.class
+com\claimmanagement\service\ClaimService.class
+com\claimmanagement\mapper\ClaimMapper.class
+com\claimmanagement\exception\GlobalExceptionHandler.class
+com\claimmanagement\ClaimManagementServiceApplication.class
+com\claimmanagement\controller\ClaimController.class
+com\claimmanagement\exception\InvalidClaimStateException.class
+com\claimmanagement\exception\GlobalExceptionHandler$ErrorResponse$ErrorResponseBuilder.class
+com\claimmanagement\model\entity\ClaimStatus.class
+com\claimmanagement\exception\GlobalExceptionHandler$ErrorResponse.class
