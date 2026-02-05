@@ -21,7 +21,7 @@ spring:
     driver-class-name: org.h2.Driver # H2 database driver
     username: sa                      # Default H2 username
     password: password               # Database password
-    
+
   # H2 Console Configuration (for development/debugging)
   h2:
     console:
@@ -29,20 +29,26 @@ spring:
       path: /h2-console              # H2 console access path
       settings:
         web-allow-others: false       # Security: only local access
-        
+
   # JPA/Hibernate Configuration
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect  # H2 SQL dialect
     hibernate:
       ddl-auto: create-drop          # Database schema management strategy
-                                     # create-drop: Create schema on startup, drop on shutdown
-                                     # Options: none, validate, update, create, create-drop
+        # create-drop: Create schema on startup, drop on shutdown
+      # Options: none, validate, update, create, create-drop
     show-sql: true                   # Log SQL statements (development only)
     properties:
       hibernate:
         format_sql: true             # Format SQL statements for readability
         use_sql_comments: true       # Add comments to generated SQL
-        
+
+  # SQL Initialization Configuration
+  sql:
+    init:
+      mode: always                   # Always run SQL scripts
+      data-locations: classpath:data.sql  # Location of data initialization script
+
 # Logging Configuration
 logging:
   level:
@@ -52,7 +58,7 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Log SQL parameters
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"  # Console log pattern
-    
+
 # Management/Actuator Configuration (Health checks, metrics)
 management:
   endpoints:
@@ -62,7 +68,7 @@ management:
   endpoint:
     health:
       show-details: always           # Show detailed health information
-      
+
 # API Documentation Configuration
 springdoc:
   api-docs:

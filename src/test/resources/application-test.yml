@@ -33,6 +33,11 @@ spring:
         format_sql: false
         use_sql_comments: false
         
+  # SQL Initialization Configuration
+  sql:
+    init:
+      mode: never  # Disable data.sql in tests to avoid conflicts
+        
 # Logging Configuration for Tests
 logging:
   level:
