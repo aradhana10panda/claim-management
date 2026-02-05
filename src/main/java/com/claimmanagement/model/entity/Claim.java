@@ -11,35 +11,35 @@ import java.util.Objects;
 
 /**
  * Claim Entity - Represents a claim in the database
- * 
+ * <p>
  * JPA Annotations Explained:
+ *
+ * @author Claim Management Team
  * @Entity - Marks this class as a JPA entity (database table)
  * @Table - Specifies the table name and constraints
  * @Id - Marks the primary key field
  * @GeneratedValue - Specifies how the primary key is generated
  * @Column - Maps field to database column with constraints
  * @Enumerated - Maps enum to database (STRING stores enum name, ORDINAL stores position)
- * 
+ * <p>
  * Hibernate Annotations:
  * @CreationTimestamp - Automatically sets timestamp when entity is created
  * @UpdateTimestamp - Automatically updates timestamp when entity is modified
- * 
+ * <p>
  * Validation Annotations:
  * @NotBlank - Field cannot be null or empty (for Strings)
  * @NotNull - Field cannot be null
  * @Size - Validates string length
  * @DecimalMin - Validates minimum decimal value
  * @Email - Validates email format
- * 
- * @author Claim Management Team
  */
 @Entity
-@Table(name = "claims", 
-       indexes = {
-           @Index(name = "idx_claim_number", columnList = "claimNumber"),
-           @Index(name = "idx_policy_number", columnList = "policyNumber"),
-           @Index(name = "idx_status", columnList = "status")
-       })
+@Table(name = "claims",
+        indexes = {
+                @Index(name = "idx_claim_number", columnList = "claimNumber"),
+                @Index(name = "idx_policy_number", columnList = "policyNumber"),
+                @Index(name = "idx_status", columnList = "status")
+        })
 public class Claim {
 
     /**
@@ -53,6 +53,7 @@ public class Claim {
 
     /**
      * Unique claim number - Business identifier for the claim
+     *
      * @Column annotations specify database constraints
      */
     @NotBlank(message = "Claim number is required")
@@ -112,6 +113,7 @@ public class Claim {
 
     /**
      * Current status of the claim
+     *
      * @Enumerated(EnumType.STRING) stores the enum name as string in database
      * This is preferred over ORDINAL as it's more readable and maintainable
      */
@@ -129,6 +131,7 @@ public class Claim {
 
     /**
      * Automatically set when the claim is created
+     *
      * @CreationTimestamp annotation handles this automatically
      */
     @CreationTimestamp
@@ -137,6 +140,7 @@ public class Claim {
 
     /**
      * Automatically updated when the claim is modified
+     *
      * @UpdateTimestamp annotation handles this automatically
      */
     @UpdateTimestamp
@@ -154,8 +158,8 @@ public class Claim {
      * Constructor for creating new claims
      * Excludes id, createdAt, updatedAt as they are auto-generated
      */
-    public Claim(String claimNumber, String policyNumber, String claimantName, 
-                 String claimantEmail, String claimantPhone, String description, 
+    public Claim(String claimNumber, String policyNumber, String claimantName,
+                 String claimantEmail, String claimantPhone, String description,
                  BigDecimal claimAmount, ClaimStatus status, LocalDateTime incidentDate) {
         this.claimNumber = claimNumber;
         this.policyNumber = policyNumber;
@@ -172,6 +176,7 @@ public class Claim {
 
     /**
      * Gets the unique identifier of the claim
+     *
      * @return the claim ID
      */
     public Long getId() {
@@ -181,6 +186,7 @@ public class Claim {
     /**
      * Sets the unique identifier of the claim
      * Note: This should typically only be used by JPA
+     *
      * @param id the claim ID
      */
     public void setId(Long id) {

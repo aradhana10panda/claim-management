@@ -25,26 +25,26 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Implementation of ClaimService interface
- * 
+ * <p>
  * Service Implementation Best Practices:
  * 1. Transaction Management: Use @Transactional for data consistency
  * 2. Exception Handling: Convert technical exceptions to business exceptions
  * 3. Logging: Log important business events and errors
  * 4. Validation: Implement business rule validation
  * 5. Performance: Optimize database queries and caching
- * 
+ * <p>
  * Spring Annotations:
+ *
+ * @author Claim Management Team
  * @Service - Marks this as a Spring service component
  * @Transactional - Manages database transactions automatically
  * @Autowired - Dependency injection (constructor injection preferred)
- * 
+ * <p>
  * Transaction Management:
  * - @Transactional ensures ACID properties
  * - Rollback on RuntimeException by default
  * - Can specify isolation levels and propagation behavior
  * - readOnly = true optimizes read-only operations
- * 
- * @author Claim Management Team
  */
 @Service
 @Transactional  // All methods run in transactions by default
@@ -73,15 +73,15 @@ public class ClaimServiceImpl implements ClaimService {
 
     /**
      * Constructor-based dependency injection (recommended over field injection)
-     * 
+     * <p>
      * Benefits of constructor injection:
      * 1. Immutable dependencies (final fields)
      * 2. Fail-fast if dependencies are missing
      * 3. Easy to test (no reflection needed)
      * 4. Clear dependencies in constructor signature
-     * 
+     *
      * @param claimRepository Repository for claim data access
-     * @param claimMapper Mapper for entity-DTO conversions
+     * @param claimMapper     Mapper for entity-DTO conversions
      */
     @Autowired
     public ClaimServiceImpl(ClaimRepository claimRepository, ClaimMapper claimMapper) {
@@ -91,7 +91,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     /**
      * Creates a new claim with business logic validation
-     * 
+     * <p>
      * Transaction behavior: Creates new transaction if none exists
      * Rollback: Automatic on any RuntimeException
      */
@@ -132,7 +132,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     /**
      * Retrieves claim by ID with error handling
-     * 
+     *
      * @Transactional(readOnly = true) optimizes for read operations:
      * - No dirty checking for entities
      * - Database can optimize for read-only queries
@@ -163,11 +163,11 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     @Transactional(readOnly = true)
     public Page<ClaimResponseDto> getAllClaims(Pageable pageable) {
-        logger.debug("Retrieving all claims with pagination: page={}, size={}", 
-                    pageable.getPageNumber(), pageable.getPageSize());
+        logger.debug("Retrieving all claims with pagination: page={}, size={}",
+                pageable.getPageNumber(), pageable.getPageSize());
 
         Page<Claim> claimsPage = claimRepository.findAll(pageable);
-        
+
         // Convert Page<Claim> to Page<ClaimResponseDto>
         return claimsPage.map(claimMapper::toResponseDto);
     }
@@ -187,14 +187,14 @@ public class ClaimServiceImpl implements ClaimService {
         // Check if claim can be modified
         if (existingClaim.getStatus().isTerminal()) {
             throw new InvalidClaimStateException(
-                "Cannot modify claim in terminal state: " + existingClaim.getStatus());
+                    "Cannot modify claim in terminal state: " + existingClaim.getStatus());
         }
 
         // Validate status transition if status is being changed
-        if (requestDto.getStatus() != null && 
-            !existingClaim.getStatus().canTransitionTo(requestDto.getStatus())) {
+        if (requestDto.getStatus() != null &&
+                !existingClaim.getStatus().canTransitionTo(requestDto.getStatus())) {
             throw new InvalidClaimStateException(
-                String.format("Invalid status transition from %s to %s", 
+                    String.format("Invalid status transition from %s to %s",
                             existingClaim.getStatus(), requestDto.getStatus()));
         }
 
@@ -223,15 +223,15 @@ public class ClaimServiceImpl implements ClaimService {
         // Validate status transition
         if (!claim.getStatus().canTransitionTo(newStatus)) {
             throw new InvalidClaimStateException(
-                String.format("Invalid status transition from %s to %s", 
+                    String.format("Invalid status transition from %s to %s",
                             claim.getStatus(), newStatus));
         }
 
         claim.setStatus(newStatus);
         Claim updatedClaim = claimRepository.save(claim);
 
-        logger.info("Successfully updated claim status: {} -> {}", 
-                   claim.getClaimNumber(), newStatus);
+        logger.info("Successfully updated claim status: {} -> {}",
+                claim.getClaimNumber(), newStatus);
 
         return claimMapper.toResponseDto(updatedClaim);
     }
@@ -247,7 +247,7 @@ public class ClaimServiceImpl implements ClaimService {
         // Business rule: Only allow deletion of claims in SUBMITTED status
         if (claim.getStatus() != ClaimStatus.SUBMITTED) {
             throw new InvalidClaimStateException(
-                "Cannot delete claim in status: " + claim.getStatus());
+                    "Cannot delete claim in status: " + claim.getStatus());
         }
 
         claimRepository.delete(claim);
@@ -256,13 +256,13 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ClaimResponseDto> searchClaims(String policyNumber, ClaimStatus status, 
-                                              String claimantEmail, Pageable pageable) {
-        logger.debug("Searching claims with criteria - policy: {}, status: {}, email: {}", 
-                    policyNumber, status, claimantEmail);
+    public Page<ClaimResponseDto> searchClaims(String policyNumber, ClaimStatus status,
+                                               String claimantEmail, Pageable pageable) {
+        logger.debug("Searching claims with criteria - policy: {}, status: {}, email: {}",
+                policyNumber, status, claimantEmail);
 
         Page<Claim> claimsPage = claimRepository.findByOptionalCriteria(
-            policyNumber, status, claimantEmail, pageable);
+                policyNumber, status, claimantEmail, pageable);
 
         return claimsPage.map(claimMapper::toResponseDto);
     }
@@ -335,39 +335,39 @@ public class ClaimServiceImpl implements ClaimService {
 
     /**
      * Generates unique claim number with retry logic
-     * 
+     * <p>
      * Format: CLM-YYYY-NNNNNN
      * - CLM: Prefix for claim
      * - YYYY: Current year
      * - NNNNNN: 6-digit sequential number
-     * 
+     * <p>
      * Collision handling: Retry with different random number if collision occurs
      */
     @Override
     public String generateClaimNumber() {
         int currentYear = Year.now().getValue();
         int maxRetries = 10;
-        
+
         for (int attempt = 0; attempt < maxRetries; attempt++) {
             // Generate random 6-digit number
             int randomNumber = ThreadLocalRandom.current().nextInt(100000, 999999);
             String claimNumber = String.format("CLM-%d-%06d", currentYear, randomNumber);
-            
+
             // Check if this number already exists
             if (!existsByClaimNumber(claimNumber)) {
                 logger.debug("Generated unique claim number: {}", claimNumber);
                 return claimNumber;
             }
-            
+
             logger.debug("Claim number collision detected: {}, retrying...", claimNumber);
         }
-        
+
         throw new RuntimeException("Failed to generate unique claim number after " + maxRetries + " attempts");
     }
 
     /**
      * Validates business rules for claim creation
-     * 
+     *
      * @param claim The claim to validate
      * @throws IllegalArgumentException if validation fails
      */
@@ -393,7 +393,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     /**
      * Validates business rules for claim updates
-     * 
+     *
      * @param claim The claim to validate
      * @throws IllegalArgumentException if validation fails
      */

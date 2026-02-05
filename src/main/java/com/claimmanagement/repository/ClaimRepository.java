@@ -16,41 +16,40 @@ import java.util.Optional;
 
 /**
  * Repository interface for Claim entity data access operations
- * 
+ * <p>
  * Spring Data JPA Repository Pattern:
  * - Extends JpaRepository to get CRUD operations automatically
  * - JpaRepository<Entity, ID> provides methods like save(), findById(), findAll(), delete()
  * - Spring Data JPA generates implementation at runtime using proxies
  * - Method names are parsed to generate queries automatically
- * 
+ * <p>
  * Benefits of Repository Pattern:
  * 1. Abstraction: Hides data access complexity from business logic
  * 2. Testability: Easy to mock for unit testing
  * 3. Consistency: Standardized data access interface
  * 4. Flexibility: Can switch data sources without changing business logic
- * 
+ * <p>
  * Query Methods:
  * - Spring Data JPA derives queries from method names
  * - Keywords: findBy, existsBy, countBy, deleteBy
  * - Operators: And, Or, Between, LessThan, GreaterThan, Like, In, etc.
  * - Custom queries using @Query annotation with JPQL or native SQL
- * 
+ *
+ * @author Claim Management Team
  * @Repository annotation:
  * - Marks this as a Spring Data repository
  * - Enables exception translation (converts database exceptions to Spring exceptions)
  * - Makes the interface eligible for Spring's component scanning
- * 
- * @author Claim Management Team
  */
 @Repository
 public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find a claim by its unique claim number
-     * 
+     * <p>
      * Method naming convention: findBy + PropertyName
      * Spring Data JPA generates: SELECT * FROM claims WHERE claim_number = ?
-     * 
+     *
      * @param claimNumber The unique claim number to search for
      * @return Optional containing the claim if found, empty otherwise
      */
@@ -58,11 +57,11 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Check if a claim exists with the given claim number
-     * 
+     * <p>
      * Method naming convention: existsBy + PropertyName
      * Spring Data JPA generates: SELECT COUNT(*) > 0 FROM claims WHERE claim_number = ?
      * More efficient than findBy when you only need to check existence
-     * 
+     *
      * @param claimNumber The claim number to check
      * @return true if a claim with this number exists, false otherwise
      */
@@ -70,9 +69,9 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find all claims for a specific policy number
-     * 
+     * <p>
      * Returns a list because one policy can have multiple claims
-     * 
+     *
      * @param policyNumber The policy number to search for
      * @return List of claims associated with the policy
      */
@@ -80,9 +79,9 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find all claims with a specific status
-     * 
+     * <p>
      * Useful for administrative views and reporting
-     * 
+     *
      * @param status The claim status to filter by
      * @return List of claims with the specified status
      */
@@ -90,9 +89,9 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find claims by claimant email address
-     * 
+     * <p>
      * Allows customers to view all their claims
-     * 
+     *
      * @param claimantEmail The email address of the claimant
      * @return List of claims for the specified email
      */
@@ -100,22 +99,22 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find claims created within a date range
-     * 
+     * <p>
      * Method naming: findBy + PropertyName + Between
      * Useful for reporting and analytics
-     * 
+     *
      * @param startDate Start of the date range (inclusive)
-     * @param endDate End of the date range (inclusive)
+     * @param endDate   End of the date range (inclusive)
      * @return List of claims created within the specified date range
      */
     List<Claim> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Find claims with amount greater than specified value
-     * 
+     * <p>
      * Method naming: findBy + PropertyName + GreaterThan
      * Useful for identifying high-value claims
-     * 
+     *
      * @param amount The minimum claim amount
      * @return List of claims with amount greater than the specified value
      */
@@ -123,15 +122,15 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find claims by status with pagination support
-     * 
+     * <p>
      * Pageable parameter enables pagination and sorting
      * Returns Page<T> which contains:
      * - List of entities for current page
      * - Total number of elements
      * - Total number of pages
      * - Current page information
-     * 
-     * @param status The claim status to filter by
+     *
+     * @param status   The claim status to filter by
      * @param pageable Pagination and sorting parameters
      * @return Page of claims with the specified status
      */
@@ -139,66 +138,65 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Find claims by multiple criteria with pagination
-     * 
+     * <p>
      * Method naming: findBy + Property1 + And + Property2
      * Combines multiple conditions with AND operator
-     * 
+     *
      * @param policyNumber The policy number to filter by
-     * @param status The claim status to filter by
-     * @param pageable Pagination and sorting parameters
+     * @param status       The claim status to filter by
+     * @param pageable     Pagination and sorting parameters
      * @return Page of claims matching both criteria
      */
     Page<Claim> findByPolicyNumberAndStatus(String policyNumber, ClaimStatus status, Pageable pageable);
 
     /**
      * Custom JPQL query to find claims by claimant name (case-insensitive partial match)
-     * 
+     *
+     * @param claimantName The name to search for (partial match)
+     * @return List of claims where claimant name contains the search term
      * @Query annotation allows custom JPQL (Java Persistence Query Language) queries
      * JPQL is object-oriented query language (uses entity names, not table names)
-     * 
+     * <p>
      * Benefits of custom queries:
      * - Complex logic that can't be expressed in method names
      * - Performance optimization
      * - Advanced SQL features
-     * 
-     * @param claimantName The name to search for (partial match)
-     * @return List of claims where claimant name contains the search term
      */
     @Query("SELECT c FROM Claim c WHERE LOWER(c.claimantName) LIKE LOWER(CONCAT('%', :claimantName, '%'))")
     List<Claim> findByClaimantNameContainingIgnoreCase(@Param("claimantName") String claimantName);
 
     /**
      * Custom JPQL query to find claims by multiple optional criteria
-     * 
+     * <p>
      * This query demonstrates:
      * - Optional parameters using OR conditions
      * - Parameter binding with @Param
      * - Complex WHERE clauses
-     * 
-     * @param policyNumber Optional policy number filter
-     * @param status Optional status filter
+     *
+     * @param policyNumber  Optional policy number filter
+     * @param status        Optional status filter
      * @param claimantEmail Optional claimant email filter
-     * @param pageable Pagination parameters
+     * @param pageable      Pagination parameters
      * @return Page of claims matching the criteria
      */
     @Query("SELECT c FROM Claim c WHERE " +
-           "(:policyNumber IS NULL OR c.policyNumber = :policyNumber) AND " +
-           "(:status IS NULL OR c.status = :status) AND " +
-           "(:claimantEmail IS NULL OR c.claimantEmail = :claimantEmail)")
+            "(:policyNumber IS NULL OR c.policyNumber = :policyNumber) AND " +
+            "(:status IS NULL OR c.status = :status) AND " +
+            "(:claimantEmail IS NULL OR c.claimantEmail = :claimantEmail)")
     Page<Claim> findByOptionalCriteria(@Param("policyNumber") String policyNumber,
-                                      @Param("status") ClaimStatus status,
-                                      @Param("claimantEmail") String claimantEmail,
-                                      Pageable pageable);
+                                       @Param("status") ClaimStatus status,
+                                       @Param("claimantEmail") String claimantEmail,
+                                       Pageable pageable);
 
     /**
      * Custom JPQL query for claims summary statistics
-     * 
+     * <p>
      * Demonstrates aggregate functions in JPQL:
      * - COUNT(): Number of records
      * - SUM(): Total of numeric values
      * - AVG(): Average of numeric values
      * - MIN()/MAX(): Minimum/Maximum values
-     * 
+     *
      * @param status The status to calculate statistics for
      * @return Array containing [count, total_amount, average_amount]
      */
@@ -207,10 +205,10 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Count claims by status
-     * 
+     * <p>
      * Method naming: countBy + PropertyName
      * Returns long instead of List<Entity>
-     * 
+     *
      * @param status The status to count
      * @return Number of claims with the specified status
      */
@@ -218,13 +216,13 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     /**
      * Delete claims by policy number
-     * 
+     * <p>
      * Method naming: deleteBy + PropertyName
      * Spring Data JPA generates DELETE statement
-     * 
+     * <p>
      * Note: This performs individual DELETE operations for each entity
      * For bulk operations, consider using @Modifying @Query
-     * 
+     *
      * @param policyNumber The policy number whose claims should be deleted
      * @return Number of deleted claims
      */

@@ -9,19 +9,19 @@ import java.time.LocalDateTime;
 
 /**
  * Data Transfer Object for Claim Response
- * 
+ * <p>
  * This DTO is used for:
  * 1. Returning claim data in API responses
  * 2. Controlling what information is exposed to clients
  * 3. Providing a stable API contract independent of entity changes
  * 4. Including computed or derived fields not stored in the entity
- * 
+ * <p>
  * Key differences from ClaimRequestDto:
  * - Includes system-generated fields (id, claimNumber, timestamps)
  * - No validation annotations (data is already validated)
  * - Read-only representation of claim data
  * - May include additional computed fields
- * 
+ *
  * @author Claim Management Team
  */
 @Schema(description = "Response object containing claim information")
@@ -112,10 +112,10 @@ public class ClaimResponseDto {
      * Constructor with all fields
      * Useful for programmatic creation and testing
      */
-    public ClaimResponseDto(Long id, String claimNumber, String policyNumber, String claimantName, 
-                           String claimantEmail, String claimantPhone, String description, 
-                           BigDecimal claimAmount, ClaimStatus status, LocalDateTime incidentDate, 
-                           LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ClaimResponseDto(Long id, String claimNumber, String policyNumber, String claimantName,
+                            String claimantEmail, String claimantPhone, String description,
+                            BigDecimal claimAmount, ClaimStatus status, LocalDateTime incidentDate,
+                            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.claimNumber = claimNumber;
         this.policyNumber = policyNumber;
@@ -231,7 +231,7 @@ public class ClaimResponseDto {
     /**
      * Convenience method to check if claim is in a terminal state
      * This is a computed property not stored in the database
-     * 
+     *
      * @return true if the claim cannot be modified further
      */
     @Schema(description = "Indicates if the claim is in a terminal state")
@@ -241,7 +241,7 @@ public class ClaimResponseDto {
 
     /**
      * Convenience method to check if claim was successfully processed
-     * 
+     *
      * @return true if the claim was paid
      */
     @Schema(description = "Indicates if the claim was successfully processed")

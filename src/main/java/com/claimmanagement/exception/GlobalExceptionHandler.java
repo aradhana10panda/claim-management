@@ -16,11 +16,12 @@ import java.util.Map;
 
 /**
  * Global Exception Handler for the Claim Management Service
- * 
+ *
+ * @author Claim Management Team
  * @RestControllerAdvice combines @ControllerAdvice and @ResponseBody:
  * - @ControllerAdvice: Makes this class handle exceptions globally across all controllers
  * - @ResponseBody: Automatically serializes return values to JSON
- * 
+ * <p>
  * Benefits of Global Exception Handling:
  * 1. Centralized Error Handling: All exceptions handled in one place
  * 2. Consistent Error Response Format: Standardized error structure
@@ -28,14 +29,12 @@ import java.util.Map;
  * 4. Reduced Code Duplication: No need to handle exceptions in each controller
  * 5. Better Logging: Centralized logging of all exceptions
  * 6. Client-Friendly Responses: Convert technical exceptions to user-friendly messages
- * 
+ * <p>
  * Exception Handling Strategy:
  * - Business exceptions (404, 400) return appropriate HTTP status codes
  * - Technical exceptions (500) are logged and return generic error messages
  * - Validation errors are formatted as field-specific error maps
  * - All responses include timestamp and request path for debugging
- * 
- * @author Claim Management Team
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,20 +46,19 @@ public class GlobalExceptionHandler {
 
     /**
      * Handles ClaimNotFoundException
-     * 
-     * @ExceptionHandler specifies which exception types this method handles
-     * Returns HTTP 404 (Not Found) for business logic "not found" scenarios
-     * 
-     * @param ex The ClaimNotFoundException that was thrown
+     *
+     * @param ex      The ClaimNotFoundException that was thrown
      * @param request The web request context
      * @return ResponseEntity with error details and 404 status
+     * @ExceptionHandler specifies which exception types this method handles
+     * Returns HTTP 404 (Not Found) for business logic "not found" scenarios
      */
     @ExceptionHandler(ClaimNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleClaimNotFoundException(
             ClaimNotFoundException ex, WebRequest request) {
-        
+
         logger.warn("Claim not found: {}", ex.getMessage());
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
@@ -68,30 +66,30 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         // Add claim identifier if available
         if (ex.getClaimIdentifier() != null) {
             errorResponse.addDetail("claimIdentifier", ex.getClaimIdentifier());
         }
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     /**
      * Handles InvalidClaimStateException
-     * 
+     * <p>
      * Returns HTTP 400 (Bad Request) for invalid business operations
-     * 
-     * @param ex The InvalidClaimStateException that was thrown
+     *
+     * @param ex      The InvalidClaimStateException that was thrown
      * @param request The web request context
      * @return ResponseEntity with error details and 400 status
      */
     @ExceptionHandler(InvalidClaimStateException.class)
     public ResponseEntity<ErrorResponse> handleInvalidClaimStateException(
             InvalidClaimStateException ex, WebRequest request) {
-        
+
         logger.warn("Invalid claim state operation: {}", ex.getMessage());
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -99,7 +97,7 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         // Add status information if available
         if (ex.getCurrentStatus() != null) {
             errorResponse.addDetail("currentStatus", ex.getCurrentStatus().toString());
@@ -110,28 +108,28 @@ public class GlobalExceptionHandler {
         if (ex.getClaimIdentifier() != null) {
             errorResponse.addDetail("claimIdentifier", ex.getClaimIdentifier());
         }
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Handles Bean Validation Errors
-     * 
+     * <p>
      * MethodArgumentNotValidException is thrown when @Valid annotation fails
      * This occurs when request DTOs don't pass validation constraints
-     * 
+     * <p>
      * Returns HTTP 400 (Bad Request) with detailed field-level validation errors
-     * 
-     * @param ex The MethodArgumentNotValidException containing validation errors
+     *
+     * @param ex      The MethodArgumentNotValidException containing validation errors
      * @param request The web request context
      * @return ResponseEntity with validation error details and 400 status
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
-        
+
         logger.warn("Validation failed: {} validation errors", ex.getBindingResult().getErrorCount());
-        
+
         // Extract field-level validation errors
         Map<String, String> validationErrors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -139,7 +137,7 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             validationErrors.put(fieldName, errorMessage);
         });
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -147,29 +145,29 @@ public class GlobalExceptionHandler {
                 .message("Request validation failed")
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         // Add validation errors as details
         errorResponse.addDetail("validationErrors", validationErrors);
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Handles IllegalArgumentException
-     * 
+     * <p>
      * Often thrown by business logic for invalid input parameters
      * Returns HTTP 400 (Bad Request)
-     * 
-     * @param ex The IllegalArgumentException that was thrown
+     *
+     * @param ex      The IllegalArgumentException that was thrown
      * @param request The web request context
      * @return ResponseEntity with error details and 400 status
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException ex, WebRequest request) {
-        
+
         logger.warn("Illegal argument: {}", ex.getMessage());
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -177,26 +175,26 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Handles IllegalStateException
-     * 
+     * <p>
      * Thrown when an operation is called at an inappropriate time
      * Returns HTTP 409 (Conflict)
-     * 
-     * @param ex The IllegalStateException that was thrown
+     *
+     * @param ex      The IllegalStateException that was thrown
      * @param request The web request context
      * @return ResponseEntity with error details and 409 status
      */
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(
             IllegalStateException ex, WebRequest request) {
-        
+
         logger.warn("Illegal state: {}", ex.getMessage());
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
@@ -204,27 +202,27 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     /**
      * Handles all other RuntimeExceptions
-     * 
+     * <p>
      * Catch-all handler for unexpected runtime exceptions
      * Returns HTTP 500 (Internal Server Error)
      * Logs full stack trace for debugging
-     * 
-     * @param ex The RuntimeException that was thrown
+     *
+     * @param ex      The RuntimeException that was thrown
      * @param request The web request context
      * @return ResponseEntity with generic error message and 500 status
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(
             RuntimeException ex, WebRequest request) {
-        
+
         logger.error("Unexpected runtime exception", ex);
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -232,33 +230,33 @@ public class GlobalExceptionHandler {
                 .message("An unexpected error occurred. Please try again later.")
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         // In development, include exception details
         // In production, this should be removed for security
         if (isDevelopmentMode()) {
             errorResponse.addDetail("exceptionType", ex.getClass().getSimpleName());
             errorResponse.addDetail("exceptionMessage", ex.getMessage());
         }
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * Handles all other Exceptions (checked exceptions)
-     * 
+     * <p>
      * Final catch-all handler for any exceptions not handled above
      * Returns HTTP 500 (Internal Server Error)
-     * 
-     * @param ex The Exception that was thrown
+     *
+     * @param ex      The Exception that was thrown
      * @param request The web request context
      * @return ResponseEntity with generic error message and 500 status
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception ex, WebRequest request) {
-        
+
         logger.error("Unexpected exception", ex);
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -266,15 +264,15 @@ public class GlobalExceptionHandler {
                 .message("An unexpected error occurred. Please contact support.")
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * Checks if the application is running in development mode
-     * 
+     * <p>
      * In a real application, this would check Spring profiles or environment variables
-     * 
+     *
      * @return true if in development mode
      */
     private boolean isDevelopmentMode() {
@@ -284,7 +282,7 @@ public class GlobalExceptionHandler {
 
     /**
      * Error Response DTO for consistent error format
-     * 
+     * <p>
      * Provides a standardized structure for all error responses
      * Includes common fields and allows for additional details
      */
@@ -324,23 +322,53 @@ public class GlobalExceptionHandler {
         }
 
         // Getters and Setters
-        public LocalDateTime getTimestamp() { return timestamp; }
-        public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
 
-        public int getStatus() { return status; }
-        public void setStatus(int status) { this.status = status; }
+        public void setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
+        }
 
-        public String getError() { return error; }
-        public void setError(String error) { this.error = error; }
+        public int getStatus() {
+            return status;
+        }
 
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
+        public void setStatus(int status) {
+            this.status = status;
+        }
 
-        public String getPath() { return path; }
-        public void setPath(String path) { this.path = path; }
+        public String getError() {
+            return error;
+        }
 
-        public Map<String, Object> getDetails() { return details; }
-        public void setDetails(Map<String, Object> details) { this.details = details; }
+        public void setError(String error) {
+            this.error = error;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public Map<String, Object> getDetails() {
+            return details;
+        }
+
+        public void setDetails(Map<String, Object> details) {
+            this.details = details;
+        }
 
         // Builder class
         public static class ErrorResponseBuilder {
